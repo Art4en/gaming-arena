@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gamer Arena — Es-tu un vrai gamer ou juste un bot ?</title>
+  <meta name="description" content="Test de personnalité, mini-jeux de réflexes et quiz de culture gaming : League of Legends, Valorant, Fortnite, Apex Legends.">
+
+  <!-- Polices (optionnel : le site fonctionne aussi sans internet) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== BARRE DU HAUT (toujours visible) ===== -->
+  <header class="topbar">
+    <button class="logo" data-go="accueil" aria-label="Retour au lobby">GAMER<span>ARENA</span></button>
+
+    <nav class="nav" aria-label="Navigation principale">
+      <button class="nav-link g-perso" data-go="personnalite">🎮 Personnalité</button>
+      <button class="nav-link g-reflex" data-go="reflexes">🎯 Réflexes</button>
+      <button class="nav-link g-culture" data-go="culture">🧠 Culture</button>
+    </nav>
+
+    <!-- Devient « Mon profil » une fois connecté (pseudo mis à jour par le script) -->
+    <button class="btn btn-small" id="account-btn" data-go="compte" type="button">S'inscrire</button>
+  </header>
+
+  <main>
+    <!-- ===================== LOBBY (ACCUEIL) ===================== -->
+    <section class="screen" id="screen-accueil">
+      <div class="hero">
+        <p class="eyebrow">Le test que personne n'a demandé</p>
+        <h1 class="hero-title">Es-tu un vrai gamer ou juste un bot&nbsp;?</h1>
+        <p class="intro">
+          Trois épreuves pour le découvrir : ta personnalité de joueur, tes réflexes
+          (ou ce qu'il en reste après ta quatrième pizza) et ta culture gaming.
+          Spoiler : tu as déjà lu le wiki, on le sait.
+        </p>
+        <p class="hello" id="hello"></p>
+      </div>
+
+      <div class="cards">
+        <article class="card g-perso" data-go="personnalite" tabindex="0" role="button">
+          <div class="card-icon">🎮</div>
+          <h2>Quel gamer es-tu ?</h2>
+          <p>20 questions pour découvrir ton profil de joueur.</p>
+          <span class="btn btn-primary">Jouer</span>
+        </article>
+
+        <article class="card g-reflex" data-go="reflexes" tabindex="0" role="button">
+          <div class="card-icon">🎯</div>
+          <h2>Test de réflexes</h2>
+          <p>Temps de réaction et aim trainer, pour prouver tes doigts.</p>
+          <span class="btn btn-primary">Jouer</span>
+        </article>
+
+        <article class="card g-culture" data-go="culture" tabindex="0" role="button">
+          <div class="card-icon">🧠</div>
+          <h2>Quiz de culture gaming</h2>
+          <p>80 questions sur quatre jeux. Pas de triche, la wiki est fermée.</p>
+          <span class="btn btn-primary">Jouer</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== COMPTE : INSCRIPTION / CONNEXION ===================== -->
+    <section class="screen" id="screen-compte">
+      <h2 class="section-title">👤 Ton compte</h2>
+      <p class="lead center">Un compte est obligatoire pour accéder au site. Un pseudo, un mail, un mot de passe. Ton score apparaîtra sous ton nom dans les classements.</p>
+
+      <div class="panel">
+        <p class="auth-hint" id="auth-hint" hidden></p>
+
+        <div class="tabs">
+          <button class="tab active" data-auth="signup" type="button">Créer un compte</button>
+          <button class="tab" data-auth="login" type="button">Se connecter</button>
+        </div>
+
+        <form class="auth-form" id="signup-form" novalidate>
+          <label class="field-label" for="signup-email">Adresse mail</label>
+          <input class="field" id="signup-email" type="email" autocomplete="email" placeholder="toi@exemple.fr">
+
+          <label class="field-label" for="signup-pseudo">Pseudo</label>
+          <input class="field" id="signup-pseudo" maxlength="20" autocomplete="nickname" placeholder="Ton nom de champion">
+
+          <label class="field-label" for="signup-password">Mot de passe (6 caractères minimum)</label>
+          <input class="field" id="signup-password" type="password" autocomplete="new-password">
+
+          <div class="actions center">
+            <button class="btn btn-primary btn-big" type="submit">Créer mon compte</button>
+          </div>
+        </form>
+
+        <form class="auth-form" id="login-form" novalidate hidden>
+          <label class="field-label" for="login-email">Adresse mail</label>
+          <input class="field" id="login-email" type="email" autocomplete="email">
+
+          <label class="field-label" for="login-password">Mot de passe</label>
+          <input class="field" id="login-password" type="password" autocomplete="current-password">
+
+          <div class="actions center">
+            <button class="btn btn-primary btn-big" type="submit">Se connecter</button>
+          </div>
+        </form>
+
+        <p class="form-error" id="auth-error" role="alert"></p>
+      </div>
+    </section>
+
+    <!-- ===================== PREMIÈRE CONNEXION ===================== -->
+    <section class="screen" id="screen-bienvenue">
+      <h2 class="section-title">👋 Bienvenue</h2>
+      <p class="lead center">Trois questions rapides pour savoir par quelle activité commencer.</p>
+
+      <div class="panel" id="onb-quiz">
+        <p class="counter" id="onb-counter"></p>
+        <div class="progress"><div class="progress-bar" id="onb-progress"></div></div>
+        <h3 class="question" id="onb-question"></h3>
+        <div class="answers" id="onb-answers"></div>
+      </div>
+
+      <div class="panel result" id="onb-result" hidden>
+        <p class="eyebrow">Ton premier jeu</p>
+        <div class="result-emoji" id="onb-icon"></div>
+        <h2 class="result-title" id="onb-title"></h2>
+        <p class="result-desc" id="onb-desc"></p>
+        <div class="actions center">
+          <button class="btn btn-primary btn-big" id="onb-launch" type="button">Créer mon compte pour jouer</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PROFIL + CLASSEMENTS ===================== -->
+    <section class="screen" id="screen-profil">
+      <div class="panel profile-head">
+        <div class="avatar-wrap">
+          <div class="avatar" id="profil-avatar">🎮</div>
+          <label class="btn btn-small avatar-btn">
+            📷 Changer la photo
+            <input type="file" id="avatar-input" accept="image/*" hidden>
+          </label>
+        </div>
+        <div class="profile-info">
+          <h2 id="profil-pseudo"></h2>
+          <p class="detail" id="profil-email"></p>
+          <p class="detail" id="profil-since"></p>
+        </div>
+        <button class="btn btn-small" id="logout-btn" type="button">Se déconnecter</button>
+      </div>
+
+      <div class="actions center">
+        <button class="btn btn-primary btn-big" data-go="classements" type="button">🏆 Voir mes classements</button>
+      </div>
+    </section>
+
+    <!-- ===================== CLASSEMENTS (page dédiée) ===================== -->
+    <section class="screen" id="screen-classements">
+      <h2 class="page-title">🏆 Classements</h2>
+      <p class="lead center">Le top 10 de chaque jeu. Tes scores sont surlignés.</p>
+
+      <div class="tabs" id="board-tabs"></div>
+
+      <div class="panel">
+        <ol class="score-list" id="scores-list"></ol>
+        <div class="actions center">
+          <button class="btn btn-small" id="scores-clear" type="button">🗑️ Effacer ce classement</button>
+        </div>
+      </div>
+
+      <div class="actions center">
+        <button class="btn" data-go="profil" type="button">← Retour au profil</button>
+      </div>
+    </section>
+
+    <!-- ===================== MODE 1 : PERSONNALITÉ ===================== -->
+    <section class="screen" id="screen-personnalite">
+      <h2 class="section-title">🎭 Quel gamer es-tu ?</h2>
+
+      <div class="panel" id="perso-intro">
+        <p class="lead">20 questions, 4 réponses chacune. Pas de bonne réponse, juste ta vérité, même si elle pique.</p>
+        <div class="actions center">
+          <button class="btn btn-primary btn-big" id="perso-start" type="button">Commencer 🎮</button>
+        </div>
+      </div>
+
+      <div class="panel" id="perso-quiz" hidden>
+        <div class="progress"><div class="progress-bar" id="perso-progress"></div></div>
+        <p class="counter" id="perso-counter"></p>
+        <h3 class="question" id="perso-question"></h3>
+        <div class="answers" id="perso-answers"></div>
+      </div>
+
+      <div class="panel result" id="perso-result" hidden>
+        <div class="result-emoji" id="res-emoji"></div>
+        <h2 class="result-title" id="res-title"></h2>
+        <p class="result-desc" id="res-desc"></p>
+
+        <div class="grid-2">
+          <div class="box box-good">
+            <h3>💪 Forces</h3>
+            <ul id="res-forces"></ul>
+          </div>
+          <div class="box box-bad">
+            <h3>💀 Faiblesses</h3>
+            <ul id="res-faiblesses"></ul>
+          </div>
+        </div>
+
+        <p class="best-game">Ton jeu idéal : <strong id="res-game"></strong></p>
+
+        <div class="actions center">
+          <button class="btn" id="perso-restart" type="button">🔁 Recommencer</button>
+          <button class="btn btn-primary" id="perso-share" type="button">📋 Partager mon résultat</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MODE 2 : MENU RÉFLEXES ===================== -->
+    <section class="screen" id="screen-reflexes">
+      <h2 class="section-title">⚡ Test de réflexes</h2>
+      <p class="lead center">Deux épreuves. Les scores vont dans le classement de ton profil.</p>
+
+      <div class="cards">
+        <article class="card g-reflex" data-go="reaction" tabindex="0" role="button">
+          <div class="card-icon">🚦</div>
+          <h2>Temps de réaction</h2>
+          <p>La case devient verte, tu cliques. 5 essais, moyenne en millisecondes.</p>
+          <span class="btn btn-primary">Jouer</span>
+        </article>
+
+        <article class="card g-reflex" data-go="aim" tabindex="0" role="button">
+          <div class="card-icon">🎯</div>
+          <h2>Aim trainer</h2>
+          <p>30 secondes pour toucher un maximum de cibles, avec combo.</p>
+          <span class="btn btn-primary">Jouer</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== MODE 2a : TEMPS DE RÉACTION ===================== -->
+    <section class="screen" id="screen-reaction">
+      <h2 class="section-title">🚦 Temps de réaction</h2>
+      <p class="lead center">Clique dès que la case passe au vert. Pas avant, sinon c'est un faux départ.</p>
+
+      <div class="stats">
+        <div class="stat">
+          <span>Essais</span>
+          <strong id="reaction-counter">0 / 5</strong>
+        </div>
+      </div>
+
+      <div class="reaction-zone" id="reaction-zone" data-state="idle" role="button" tabindex="0">
+        <div>
+          <p class="zone-title" id="reaction-title"></p>
+          <p class="zone-sub" id="reaction-sub"></p>
+        </div>
+      </div>
+
+      <div class="panel end-panel" id="reaction-end" hidden>
+        <p class="eyebrow">Ta moyenne</p>
+        <div class="big-value" id="reaction-avg"></div>
+        <div class="rank" id="reaction-rank"></div>
+        <p class="rank-comment" id="reaction-comment"></p>
+
+        <div class="actions center">
+          <button class="btn btn-primary" id="reaction-save" type="button">💾 Enregistrer</button>
+          <button class="btn" id="reaction-retry" type="button">🔁 Rejouer</button>
+        </div>
+      </div>
+
+      <div class="actions center">
+        <button class="btn" data-go="reflexes" type="button">← Retour aux mini-jeux</button>
+      </div>
+    </section>
+
+    <!-- ===================== MODE 2b : AIM TRAINER ===================== -->
+    <section class="screen" id="screen-aim">
+      <h2 class="section-title">🎯 Aim trainer</h2>
+      <p class="lead center">Clique sur les cibles avant qu'elles disparaissent. 30 secondes, go !</p>
+
+      <div class="stats">
+        <div class="stat"><span>Temps</span><strong id="aim-time">30.0 s</strong></div>
+        <div class="stat"><span>Cibles</span><strong id="aim-hits">0</strong></div>
+        <div class="stat"><span>Précision</span><strong id="aim-precision">0 %</strong></div>
+        <div class="stat"><span>Combo</span><strong id="aim-combo">x0</strong></div>
+      </div>
+
+      <div class="arena" id="arena">
+        <div class="arena-overlay" id="aim-overlay">
+          <span id="aim-overlay-text">Prêt ?</span>
+        </div>
+      </div>
+
+      <div class="actions center">
+        <button class="btn btn-primary btn-big" id="aim-start" type="button">▶ Lancer la partie</button>
+      </div>
+
+      <div class="panel end-panel" id="aim-end" hidden>
+        <p class="eyebrow">Ton score</p>
+        <div class="big-value" id="aim-score"></div>
+        <p class="detail" id="aim-detail"></p>
+        <div class="rank" id="aim-rank"></div>
+        <p class="rank-comment" id="aim-comment"></p>
+
+        <div class="actions center">
+          <button class="btn btn-primary" id="aim-save" type="button">💾 Enregistrer</button>
+          <button class="btn" id="aim-retry" type="button">🔁 Rejouer</button>
+        </div>
+      </div>
+
+      <div class="actions center">
+        <button class="btn" data-go="reflexes" type="button">← Retour aux mini-jeux</button>
+      </div>
+    </section>
+
+    <!-- ===================== MODE 3 : CHOIX DU QUIZ ===================== -->
+    <section class="screen" id="screen-culture">
+      <h2 class="section-title">🧠 Quiz de culture gaming</h2>
+      <p class="lead center">Choisis ton jeu. 20 questions, 15 secondes chacune, et les réponses rapides rapportent plus.</p>
+
+      <!-- Cartes générées par script.js à partir de GAMES (data.js) -->
+      <div class="games-grid" id="games-grid"></div>
+    </section>
+
+    <!-- ===================== QUIZ EN COURS ===================== -->
+    <section class="screen" id="screen-quiz">
+      <div class="panel" id="quiz-play">
+        <div class="quiz-head">
+          <span class="chip" id="quiz-game-title"></span>
+          <span class="chip chip-glow" id="quiz-score">0 pts</span>
+        </div>
+
+        <div class="timer-track" aria-label="Temps restant">
+          <div class="timer-bar" id="quiz-timer-bar"></div>
+          <span class="timer-text" id="quiz-timer-text">15</span>
+        </div>
+
+        <div class="progress"><div class="progress-bar" id="quiz-progress"></div></div>
+        <p class="counter" id="quiz-counter"></p>
+        <h3 class="question" id="quiz-question"></h3>
+
+        <div class="answers" id="quiz-answers"></div>
+
+        <div class="feedback" id="quiz-feedback" hidden>
+          <strong id="quiz-feedback-title"></strong>
+          <p id="quiz-feedback-fun"></p>
+        </div>
+
+        <div class="actions center">
+          <button class="btn btn-primary" id="quiz-next" type="button" hidden>Question suivante ➜</button>
+        </div>
+      </div>
+
+      <div class="panel result" id="quiz-end" hidden>
+        <p class="eyebrow">Score final</p>
+        <div class="big-value" id="end-score"></div>
+        <p class="detail" id="end-pct"></p>
+        <p class="result-desc" id="end-comment"></p>
+        <p class="best-line" id="end-best"></p>
+
+        <div class="actions center">
+          <button class="btn btn-primary" id="quiz-replay" type="button">🔁 Rejouer</button>
+          <button class="btn" data-go="culture" type="button">🎮 Changer de jeu</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Gamer Arena · fait avec ❤️, de la caféine et trop de parties perdues.
+  </footer>
+
+  <!-- Notification temporaire -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Fenêtre des easter eggs -->
+  <div class="egg-modal" id="egg" hidden>
+    <div class="egg-box" role="dialog" aria-modal="true" aria-labelledby="egg-title">
+      <div class="egg-emoji" id="egg-emoji"></div>
+      <h3 id="egg-title"></h3>
+      <p id="egg-text"></p>
+      <button class="btn btn-small" id="egg-close" type="button">Fermer</button>
+    </div>
+  </div>
+
+  <!-- Supabase (base en ligne) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Données puis logique -->
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
