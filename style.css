@@ -1108,7 +1108,7 @@ body::before {
   z-index: -1;
   background-image: var(--activity-bg, none);
   background-size: 200px 200px;
-  opacity: 0.2;
+  opacity: 0.1;
   pointer-events: none;
   transition: opacity 0.3s;
 }
@@ -1182,4 +1182,40 @@ body::after {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #ffffff;
+}
+
+/* ---------- Icônes SVG (remplacent les emoji) ---------- */
+.ico {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+  vertical-align: -0.2em;
+  stroke: currentColor;
+}
+.nav-link, .btn, .tab { gap: 0.45em; }
+.nav-link, .tab { display: inline-flex; align-items: center; justify-content: center; }
+.section-title, .page-title, .box h3, #quiz-game-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+}
+.section-title, .page-title { justify-content: center; }
+.card-icon .ico, .game-emoji .ico { width: 1em; height: 1em; vertical-align: 0; }
+.result-emoji .ico, .egg-emoji .ico { width: 1em; height: 1em; vertical-align: 0; color: var(--group); }
+.card-icon, .game-emoji, .result-emoji, .egg-emoji { color: var(--group); }
+.avatar .ico { width: 1em; height: 1em; vertical-align: 0; }
+.emote .ico { width: 1em; height: 1em; vertical-align: 0; color: var(--group); }
+.rank-num .ico { width: 1.3em; height: 1.3em; }
+.medal-1 { color: #facc15; }
+.medal-2 { color: #cbd5e1; }
+.medal-3 { color: #d97706; }
+
+.games-group-title {
+  margin: 28px 0 12px;
+  font-family: var(--font-title);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  color: var(--muted, #94a3b8);
 }

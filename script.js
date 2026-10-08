@@ -15,6 +15,13 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
+/* Icône SVG du sprite (injecté ci-dessous depuis ICONS, voir data.js) */
+const ico = (name, cls = "") => `<svg class="ico ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+document.body.insertAdjacentHTML("afterbegin",
+  `<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">${
+    Object.entries(ICONS).map(([n, p]) => `<symbol id="i-${n}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</symbol>`).join("")
+  }</svg>`);
+
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 /* Mélange de Fisher-Yates (renvoie une copie) */
@@ -153,7 +160,7 @@ async function signup(email, pseudo, password) {
   if (profileError) return authError(`Profil impossible à créer : ${profileError.message}`);
 
   await loadMe(data.session);
-  toast(`🎉 Bienvenue ${me.pseudo} !`);
+  toast(`Bienvenue ${me.pseudo} !`);
   afterLogin();
 }
 
@@ -164,7 +171,7 @@ async function login(email, password) {
   await loadMe(data.session);
   if (!me) return authError("Ce compte n'a pas de profil. Vérifie que la base est bien installée.");
 
-  toast(`👋 Re-bonjour ${me.pseudo} !`);
+  toast(`Re-bonjour ${me.pseudo} !`);
   afterLogin();
 }
 
@@ -181,18 +188,18 @@ async function logout() {
   await db.auth.signOut();
   me = null;
   refreshAccountUI();
-  toast("👋 Déconnecté. À bientôt, joueur.");
+  toast("Déconnecté. À bientôt, joueur.");
   showScreen(gateScreen());
 }
 
 /* Met à jour le bouton du haut et le message d'accueil */
 function refreshAccountUI() {
   const btn = $("#account-btn");
-  btn.textContent = me ? `👤 ${me.pseudo}` : "S'inscrire";
+  btn.innerHTML = me ? `${ico("user")} ${escapeHTML(me.pseudo)}` : "S'inscrire";
   btn.dataset.go = me ? "profil" : "compte";
 
   $("#hello").textContent = me
-    ? `Salut ${me.pseudo} 👋 Prêt à te faire humilier ?`
+    ? `Salut ${me.pseudo}, prêt à te faire humilier ?`
     : "Pas encore de compte ? Crée-le en 30 secondes, ton score t'attendra au classement.";
 }
 
@@ -262,18 +269,18 @@ $("#avatar-input").addEventListener("change", async (e) => {
   const file = e.target.files[0];
   e.target.value = "";
   if (!file) return;
-  if (!file.type.startsWith("image/")) return toast("❌ Ce fichier n'est pas une image.");
-  if (file.size > 5 * 1024 * 1024) return toast("❌ Image trop lourde (5 Mo maximum).");
+  if (!file.type.startsWith("image/")) return toast("Ce fichier n'est pas une image.");
+  if (file.size > 5 * 1024 * 1024) return toast("Image trop lourde (5 Mo maximum).");
 
   try {
     const avatar = await resizeImage(file);
     const { error } = await db.from("profiles").update({ avatar }).eq("id", me.id);
-    if (error) return toast(`❌ Photo non enregistrée : ${error.message}`);
+    if (error) return toast(`Photo non enregistrée : ${error.message}`);
     me.avatar = avatar;
     renderProfile();
-    toast("📷 Photo de profil mise à jour !");
+    toast("Photo de profil mise à jour !");
   } catch (err) {
-    toast("❌ Impossible de lire cette image.");
+    toast("Impossible de lire cette image.");
   }
 });
 
@@ -296,10 +303,10 @@ function gateScreen() {
 /* Fond de l'activité : pictogrammes en mosaïque + teinte de couleur */
 function setActivityBg(key) {
   const bg = ACTIVITY_BACKGROUNDS[key] || ACTIVITY_BACKGROUNDS.accueil;
-  const texts = [[20, 60], [120, 40], [70, 130], [160, 150]]
-    .map(([x, y], i) => `<text x="${x}" y="${y}" font-size="44">${bg.icons[i % bg.icons.length]}</text>`)
+  const shapes = [[15, 15], [115, 10], [60, 105], [150, 125]]
+    .map(([x, y], i) => `<g transform="translate(${x} ${y}) scale(2.2)">${ICONS[bg.icons[i % bg.icons.length]]}</g>`)
     .join("");
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">${texts}</svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none" stroke="#e2e8f0" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${shapes}</svg>`;
   const root = document.documentElement.style;
   root.setProperty("--activity-bg", `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
   root.setProperty("--activity-tint", bg.tint);
@@ -415,7 +422,7 @@ function finishOnboarding() {
   onb.result = best;
 
   const activity = ONBOARDING_ACTIVITIES[best];
-  $("#onb-icon").textContent = activity.icon;
+  $("#onb-icon").innerHTML = ico(activity.icon);
   $("#onb-title").textContent = activity.name;
   $("#onb-desc").textContent = `${activity.desc} C'est ce qu'on te conseille pour commencer.`;
   $("#onb-launch").textContent = currentUser() ? "Lancer" : "Créer mon compte pour jouer";
@@ -517,12 +524,12 @@ function showPersoResult() {
   const p = PROFILES[key];
   perso.result = key;
 
-  $("#res-emoji").textContent = p.emoji;
+  $("#res-emoji").innerHTML = ico(p.icon);
   $("#res-title").textContent = p.title;
   $("#res-desc").textContent = p.description;
   fillList("#res-forces", p.strengths);
   fillList("#res-faiblesses", p.weaknesses);
-  $("#res-game").textContent = `${GAMES[p.game].icon} ${GAMES[p.game].name}`;
+  $("#res-game").innerHTML = `${ico(GAMES[p.game].icon)} ${GAMES[p.game].name}`;
 
   showOnly(["perso-intro", "perso-quiz", "perso-result"], "perso-result");
 }
@@ -533,22 +540,22 @@ $("#perso-restart").addEventListener("click", beginPersonality);
 $("#perso-share").addEventListener("click", async () => {
   const p = PROFILES[perso.result];
   const text =
-    `🎮 Mon profil de gamer sur GAMER ARENA : ${p.emoji} ${p.title} !\n` +
-    `💪 Forces : ${p.strengths.join(", ")}\n` +
-    `💀 Faiblesses : ${p.weaknesses.join(", ")}\n` +
-    `🕹️ Mon jeu idéal : ${GAMES[p.game].name}\n` +
+    `Mon profil de gamer sur GAMER ARENA : ${p.title} !\n` +
+    `Forces : ${p.strengths.join(", ")}\n` +
+    `Faiblesses : ${p.weaknesses.join(", ")}\n` +
+    `Mon jeu idéal : ${GAMES[p.game].name}\n` +
     `Et toi, t'es quel gamer ?`;
   const ok = await copyText(text);
-  toast(ok ? "📋 Résultat copié dans le presse-papier !" : "❌ Copie impossible, sélectionne le texte à la main.");
+  toast(ok ? "Résultat copié dans le presse-papier !" : "Copie impossible, sélectionne le texte à la main.");
 });
 
 /* =========================================================
    PROFIL ET CLASSEMENTS (partagés, lus depuis Supabase)
    ========================================================= */
 const BOARDS = [
-  { key: "reaction", label: "⚡ Temps de réaction" },
-  { key: "aim", label: "🎯 Aim trainer" },
-  ...["lol", "valorant", "fortnite", "apex", "mix"].map((k) => ({ key: k, label: `${GAMES[k].icon} ${GAMES[k].name}` }))
+  { key: "reaction", label: "Temps de réaction", icon: "zap" },
+  { key: "aim", label: "Aim trainer", icon: "target" },
+  ...Object.values(GAME_GROUPS).flatMap((g) => [...g.games, g.mix]).map((k) => ({ key: k, label: GAMES[k].name, icon: GAMES[k].icon }))
 ];
 let boardKey = "reaction";
 let lastSavedId = null;
@@ -569,7 +576,7 @@ async function saveScore(board, data) {
     .single();
 
   if (error) {
-    toast(`❌ Score non enregistré : ${error.message}`);
+    toast(`Score non enregistré : ${error.message}`);
     return false;
   }
   lastSavedId = row.id;
@@ -583,19 +590,19 @@ function renderProfile() {
   $("#profil-since").textContent = `Membre depuis le ${new Date(me.createdAt).toLocaleDateString("fr-FR")}`;
   $("#profil-avatar").innerHTML = me.avatar
     ? `<img src="${escapeHTML(me.avatar)}" alt="Photo de ${escapeHTML(me.pseudo)}">`
-    : "🎮";
+    : ico("user");
 }
 
 /* Page des classements : onglets par jeu, puis le top 10 */
 function renderClassements() {
   if (!currentUser()) return;
   $("#board-tabs").innerHTML = BOARDS.map((b) =>
-    `<button class="tab ${b.key === boardKey ? "active" : ""}" data-board="${b.key}" type="button">${b.label}</button>`
+    `<button class="tab ${b.key === boardKey ? "active" : ""}" data-board="${b.key}" type="button">${ico(b.icon)} ${b.label}</button>`
   ).join("");
   renderBoard();
 }
 
-/* Top 10 du classement choisi, avec les scores de tout le monde */
+/* Top 10 du classement choisi : le meilleur essai de chaque joueur */
 async function renderBoard() {
   const ol = $("#scores-list");
   ol.innerHTML = `<li class="empty">Chargement du classement…</li>`;
@@ -608,17 +615,20 @@ async function renderBoard() {
     .order("value", { ascending: boardKey === "reaction" });
   if (boardKey === "aim") query = query.order("precision", { ascending: false });
 
-  const { data, error } = await query.limit(10);
+  const { data: all, error } = await query.limit(1000);
   if (error) {
     ol.innerHTML = `<li class="empty">Impossible de charger le classement : ${escapeHTML(error.message)}</li>`;
     return;
   }
+  // Les scores arrivent triés du meilleur au moins bon : on garde le premier de chaque joueur
+  const seen = new Set();
+  const data = all.filter((e) => !seen.has(e.user_id) && seen.add(e.user_id)).slice(0, 10);
   if (!data.length) {
     ol.innerHTML = `<li class="empty">Aucun score pour l'instant. Sois le premier à te faire humilier ici !</li>`;
     return;
   }
 
-  const medals = ["🥇", "🥈", "🥉"];
+  const medals = [1, 2, 3].map((n) => ico("medal", `medal-${n}`));
   ol.innerHTML = data.map((e, i) => {
     const rank = i < 3 ? medals[i] : `#${i + 1}`;
     const value = boardKey === "reaction"
@@ -655,9 +665,9 @@ $("#scores-clear").addEventListener("click", async () => {
   if (!confirm(`Effacer TES scores du classement « ${label} » ?`)) return;
 
   const { error } = await db.from("scores").delete().eq("board", boardKey).eq("user_id", me.id);
-  if (error) return toast(`❌ Effacement impossible : ${error.message}`);
+  if (error) return toast(`Effacement impossible : ${error.message}`);
   renderBoard();
-  toast("🗑️ Tes scores ont été effacés de ce classement.");
+  toast("Tes scores ont été effacés de ce classement.");
 });
 
 /* Après un enregistrement : on va voir le classement */
@@ -773,7 +783,7 @@ async function saveReaction() {
     $("#reaction-save").disabled = false;
     return;
   }
-  toast("✅ Score enregistré !");
+  toast("Score enregistré !");
   goToBoard("reaction");
 }
 
@@ -786,9 +796,9 @@ $("#reaction-retry").addEventListener("click", resetReaction);
    ========================================================= */
 const ARENA_SECONDS = 30;
 const MAX_TARGETS = 3;
-const EMOTES_HIT = ["🎮", "🎯", "😎", "🔥", "⚡", "💀", "🤯", "👌"];
-const EMOTE_MISS = "💨";
-const EMOTE_EXPIRED = "😬";
+const EMOTES_HIT = ["gamepad", "target", "crosshair", "flame", "zap", "star", "check"];
+const EMOTE_MISS = "wind";
+const EMOTE_EXPIRED = "timer";
 const arena = $("#arena");
 const aim = {
   running: false,
@@ -824,7 +834,8 @@ function updateAimStats() {
 function spawnEmote(x, y, text, isCombo = false) {
   const el = document.createElement("span");
   el.className = isCombo ? "emote emote-combo" : "emote";
-  el.textContent = text;
+  if (isCombo) el.textContent = text;
+  else el.innerHTML = ico(text);
   el.style.left = `${x}px`;
   el.style.top = `${y}px`;
   arena.appendChild(el);
@@ -997,7 +1008,7 @@ async function saveAim() {
     $("#aim-save").disabled = false;
     return;
   }
-  toast("✅ Score enregistré !");
+  toast("Score enregistré !");
   goToBoard("aim");
 }
 
@@ -1024,22 +1035,26 @@ const culture = {
 
 /* Cartes de jeux, générées à partir de GAMES (data.js) : icône, genre et « pour toi si… » */
 function renderGameCards() {
-  $("#games-grid").innerHTML = ["lol", "valorant", "fortnite", "apex", "mix"].map((key) => {
+  const card = (key) => {
     const g = GAMES[key];
     return `
       <button class="game-card" data-start-quiz="${key}" type="button">
-        <span class="game-emoji">${g.icon}</span>
+        <span class="game-emoji">${ico(g.icon)}</span>
         <strong>${g.name}</strong>
         <span class="genre">${g.genre}</span>
         <span class="pour-toi">Pour toi si ${g.pourToi}</span>
         <small data-best="${key}"></small>
       </button>`;
-  }).join("");
+  };
+  $("#games-groups").innerHTML = Object.values(GAME_GROUPS).map((group) => `
+    <h3 class="games-group-title">${group.title}</h3>
+    <div class="games-grid">${[...group.games, group.mix].map(card).join("")}</div>`).join("");
 }
 
 function startCulture(gameKey) {
-  const pool = gameKey === "mix"
-    ? Object.values(CULTURE_QUESTIONS).flat()
+  const group = Object.values(GAME_GROUPS).find((g) => g.mix === gameKey);
+  const pool = group
+    ? group.games.flatMap((k) => CULTURE_QUESTIONS[k])
     : CULTURE_QUESTIONS[gameKey];
 
   culture.game = gameKey;
@@ -1048,7 +1063,7 @@ function startCulture(gameKey) {
   culture.correct = 0;
   culture.points = 0;
 
-  $("#quiz-game-title").textContent = `${GAMES[gameKey].icon} ${GAMES[gameKey].name}`;
+  $("#quiz-game-title").innerHTML = `${ico(GAMES[gameKey].icon)} ${GAMES[gameKey].name}`;
   setActivityBg(`quiz-${gameKey}`);
   showOnly(["quiz-play", "quiz-end"], "quiz-play");
   renderCultureQuestion();
@@ -1147,7 +1162,7 @@ function showFeedback(isGood, title, fun) {
 
   const next = $("#quiz-next");
   const isLast = culture.index + 1 >= CULTURE_TOTAL;
-  next.textContent = isLast ? "Voir mon score 🏁" : "Question suivante ➜";
+  next.innerHTML = isLast ? `Voir mon score ${ico("flag")}` : `Question suivante ${ico("arrow-right")}`;
   next.hidden = false;
   next.focus();
 }
@@ -1168,9 +1183,9 @@ function answerCulture(text) {
     const bonus = Math.round((left / CULTURE_SECONDS) * 100);
     culture.correct += 1;
     culture.points += 100 + bonus;
-    showFeedback(true, `✅ Bonne réponse ! +${100 + bonus} pts (bonus vitesse : +${bonus})`, q.fun);
+    showFeedback(true, `Bonne réponse ! +${100 + bonus} pts (bonus vitesse : +${bonus})`, q.fun);
   } else {
-    showFeedback(false, `❌ Raté ! La bonne réponse était : ${q.correct}`, q.fun);
+    showFeedback(false, `Raté ! La bonne réponse était : ${q.correct}`, q.fun);
   }
 
   $("#quiz-score").textContent = `${culture.points} pts`;
@@ -1181,7 +1196,7 @@ function timeoutCulture() {
   stopCultureTimer();
   const q = currentCultureQuestion();
   markAnswers(null, q.correct);
-  showFeedback(false, `⏰ Temps écoulé ! La bonne réponse était : ${q.correct}`, q.fun);
+  showFeedback(false, `Temps écoulé ! La bonne réponse était : ${q.correct}`, q.fun);
 }
 
 $("#quiz-next").addEventListener("click", () => {
@@ -1218,7 +1233,7 @@ function endCulture() {
   if (!previous || culture.points > previous.points) {
     best[culture.game] = { points: culture.points, correct: culture.correct, date: new Date().toISOString() };
     store.set(STORAGE.best, best);
-    message = previous ? "🏆 Nouveau record personnel !" : "🏆 Premier score enregistré !";
+    message = previous ? "Nouveau record personnel !" : "Premier score enregistré !";
   } else {
     message = `Ton meilleur score : ${previous.points} pts (${previous.correct} / ${CULTURE_TOTAL})`;
   }
@@ -1242,7 +1257,7 @@ function renderCultureBest() {
    EASTER EGGS (données dans data.js)
    ========================================================= */
 function showEgg(egg) {
-  $("#egg-emoji").textContent = egg.emoji;
+  $("#egg-emoji").innerHTML = ico(egg.icon);
   $("#egg-title").textContent = egg.title;
   $("#egg-text").textContent = egg.text;
   $("#egg").hidden = false;

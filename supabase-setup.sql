@@ -11,7 +11,7 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
--- Scores : un par partie. board = 'reaction', 'aim', 'lol', 'valorant', 'fortnite', 'apex' ou 'mix'
+-- Scores : un par partie. board = 'reaction', 'aim', 'lol', 'valorant', 'fortnite', 'apex', 'mix', 'cyberpunk', 'witcher', 'rdr2', 'tlou', 'gow', 'histoire', 'darksouls', 'eldenring', 'bloodborne', 'sekiro' ou 'souls'
 create table if not exists public.scores (
   id bigint generated always as identity primary key,
   user_id uuid not null references public.profiles (id) on delete cascade,

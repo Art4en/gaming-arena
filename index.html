@@ -20,9 +20,9 @@
     <button class="logo" data-go="accueil" aria-label="Retour au lobby">GAMER<span>ARENA</span></button>
 
     <nav class="nav" aria-label="Navigation principale">
-      <button class="nav-link g-perso" data-go="personnalite">🎮 Personnalité</button>
-      <button class="nav-link g-reflex" data-go="reflexes">🎯 Réflexes</button>
-      <button class="nav-link g-culture" data-go="culture">🧠 Culture</button>
+      <button class="nav-link g-perso" data-go="personnalite"><svg class="ico" aria-hidden="true"><use href="#i-gamepad"/></svg> Personnalité</button>
+      <button class="nav-link g-reflex" data-go="reflexes"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg> Réflexes</button>
+      <button class="nav-link g-culture" data-go="culture"><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> Culture</button>
     </nav>
 
     <!-- Devient « Mon profil » une fois connecté (pseudo mis à jour par le script) -->
@@ -45,21 +45,21 @@
 
       <div class="cards">
         <article class="card g-perso" data-go="personnalite" tabindex="0" role="button">
-          <div class="card-icon">🎮</div>
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-gamepad"/></svg></div>
           <h2>Quel gamer es-tu ?</h2>
           <p>20 questions pour découvrir ton profil de joueur.</p>
           <span class="btn btn-primary">Jouer</span>
         </article>
 
         <article class="card g-reflex" data-go="reflexes" tabindex="0" role="button">
-          <div class="card-icon">🎯</div>
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg></div>
           <h2>Test de réflexes</h2>
           <p>Temps de réaction et aim trainer, pour prouver tes doigts.</p>
           <span class="btn btn-primary">Jouer</span>
         </article>
 
         <article class="card g-culture" data-go="culture" tabindex="0" role="button">
-          <div class="card-icon">🧠</div>
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg></div>
           <h2>Quiz de culture gaming</h2>
           <p>80 questions sur quatre jeux. Pas de triche, la wiki est fermée.</p>
           <span class="btn btn-primary">Jouer</span>
@@ -69,7 +69,7 @@
 
     <!-- ===================== COMPTE : INSCRIPTION / CONNEXION ===================== -->
     <section class="screen" id="screen-compte">
-      <h2 class="section-title">👤 Ton compte</h2>
+      <h2 class="section-title"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg> Ton compte</h2>
       <p class="lead center">Un compte est obligatoire pour accéder au site. Un pseudo, un mail, un mot de passe. Ton score apparaîtra sous ton nom dans les classements.</p>
 
       <div class="panel">
@@ -113,7 +113,7 @@
 
     <!-- ===================== PREMIÈRE CONNEXION ===================== -->
     <section class="screen" id="screen-bienvenue">
-      <h2 class="section-title">👋 Bienvenue</h2>
+      <h2 class="section-title"><svg class="ico" aria-hidden="true"><use href="#i-hand"/></svg> Bienvenue</h2>
       <p class="lead center">Trois questions rapides pour savoir par quelle activité commencer.</p>
 
       <div class="panel" id="onb-quiz">
@@ -138,9 +138,9 @@
     <section class="screen" id="screen-profil">
       <div class="panel profile-head">
         <div class="avatar-wrap">
-          <div class="avatar" id="profil-avatar">🎮</div>
+          <div class="avatar" id="profil-avatar"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg></div>
           <label class="btn btn-small avatar-btn">
-            📷 Changer la photo
+            <svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg> Changer la photo
             <input type="file" id="avatar-input" accept="image/*" hidden>
           </label>
         </div>
@@ -153,37 +153,37 @@
       </div>
 
       <div class="actions center">
-        <button class="btn btn-primary btn-big" data-go="classements" type="button">🏆 Voir mes classements</button>
+        <button class="btn btn-primary btn-big" data-go="classements" type="button"><svg class="ico" aria-hidden="true"><use href="#i-trophy"/></svg> Voir mes classements</button>
       </div>
     </section>
 
     <!-- ===================== CLASSEMENTS (page dédiée) ===================== -->
     <section class="screen" id="screen-classements">
-      <h2 class="page-title">🏆 Classements</h2>
-      <p class="lead center">Le top 10 de chaque jeu. Tes scores sont surlignés.</p>
+      <h2 class="page-title"><svg class="ico" aria-hidden="true"><use href="#i-trophy"/></svg> Classements</h2>
+      <p class="lead center">Le top 10 de chaque jeu, avec le meilleur essai de chaque joueur. Tes scores sont surlignés.</p>
 
       <div class="tabs" id="board-tabs"></div>
 
       <div class="panel">
         <ol class="score-list" id="scores-list"></ol>
         <div class="actions center">
-          <button class="btn btn-small" id="scores-clear" type="button">🗑️ Effacer ce classement</button>
+          <button class="btn btn-small" id="scores-clear" type="button"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg> Effacer ce classement</button>
         </div>
       </div>
 
       <div class="actions center">
-        <button class="btn" data-go="profil" type="button">← Retour au profil</button>
+        <button class="btn" data-go="profil" type="button"><svg class="ico" aria-hidden="true"><use href="#i-arrow-left"/></svg> Retour au profil</button>
       </div>
     </section>
 
     <!-- ===================== MODE 1 : PERSONNALITÉ ===================== -->
     <section class="screen" id="screen-personnalite">
-      <h2 class="section-title">🎭 Quel gamer es-tu ?</h2>
+      <h2 class="section-title"><svg class="ico" aria-hidden="true"><use href="#i-help"/></svg> Quel gamer es-tu ?</h2>
 
       <div class="panel" id="perso-intro">
         <p class="lead">20 questions, 4 réponses chacune. Pas de bonne réponse, juste ta vérité, même si elle pique.</p>
         <div class="actions center">
-          <button class="btn btn-primary btn-big" id="perso-start" type="button">Commencer 🎮</button>
+          <button class="btn btn-primary btn-big" id="perso-start" type="button">Commencer <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
         </div>
       </div>
 
@@ -201,11 +201,11 @@
 
         <div class="grid-2">
           <div class="box box-good">
-            <h3>💪 Forces</h3>
+            <h3><svg class="ico" aria-hidden="true"><use href="#i-trending-up"/></svg> Forces</h3>
             <ul id="res-forces"></ul>
           </div>
           <div class="box box-bad">
-            <h3>💀 Faiblesses</h3>
+            <h3><svg class="ico" aria-hidden="true"><use href="#i-trending-down"/></svg> Faiblesses</h3>
             <ul id="res-faiblesses"></ul>
           </div>
         </div>
@@ -213,27 +213,27 @@
         <p class="best-game">Ton jeu idéal : <strong id="res-game"></strong></p>
 
         <div class="actions center">
-          <button class="btn" id="perso-restart" type="button">🔁 Recommencer</button>
-          <button class="btn btn-primary" id="perso-share" type="button">📋 Partager mon résultat</button>
+          <button class="btn" id="perso-restart" type="button"><svg class="ico" aria-hidden="true"><use href="#i-rotate"/></svg> Recommencer</button>
+          <button class="btn btn-primary" id="perso-share" type="button"><svg class="ico" aria-hidden="true"><use href="#i-clipboard"/></svg> Partager mon résultat</button>
         </div>
       </div>
     </section>
 
     <!-- ===================== MODE 2 : MENU RÉFLEXES ===================== -->
     <section class="screen" id="screen-reflexes">
-      <h2 class="section-title">⚡ Test de réflexes</h2>
+      <h2 class="section-title"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg> Test de réflexes</h2>
       <p class="lead center">Deux épreuves. Les scores vont dans le classement de ton profil.</p>
 
       <div class="cards">
         <article class="card g-reflex" data-go="reaction" tabindex="0" role="button">
-          <div class="card-icon">🚦</div>
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-timer"/></svg></div>
           <h2>Temps de réaction</h2>
           <p>La case devient verte, tu cliques. 5 essais, moyenne en millisecondes.</p>
           <span class="btn btn-primary">Jouer</span>
         </article>
 
         <article class="card g-reflex" data-go="aim" tabindex="0" role="button">
-          <div class="card-icon">🎯</div>
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg></div>
           <h2>Aim trainer</h2>
           <p>30 secondes pour toucher un maximum de cibles, avec combo.</p>
           <span class="btn btn-primary">Jouer</span>
@@ -243,7 +243,7 @@
 
     <!-- ===================== MODE 2a : TEMPS DE RÉACTION ===================== -->
     <section class="screen" id="screen-reaction">
-      <h2 class="section-title">🚦 Temps de réaction</h2>
+      <h2 class="section-title"><svg class="ico" aria-hidden="true"><use href="#i-timer"/></svg> Temps de réaction</h2>
       <p class="lead center">Clique dès que la case passe au vert. Pas avant, sinon c'est un faux départ.</p>
 
       <div class="stats">
@@ -267,19 +267,19 @@
         <p class="rank-comment" id="reaction-comment"></p>
 
         <div class="actions center">
-          <button class="btn btn-primary" id="reaction-save" type="button">💾 Enregistrer</button>
-          <button class="btn" id="reaction-retry" type="button">🔁 Rejouer</button>
+          <button class="btn btn-primary" id="reaction-save" type="button"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg> Enregistrer</button>
+          <button class="btn" id="reaction-retry" type="button"><svg class="ico" aria-hidden="true"><use href="#i-rotate"/></svg> Rejouer</button>
         </div>
       </div>
 
       <div class="actions center">
-        <button class="btn" data-go="reflexes" type="button">← Retour aux mini-jeux</button>
+        <button class="btn" data-go="reflexes" type="button"><svg class="ico" aria-hidden="true"><use href="#i-arrow-left"/></svg> Retour aux mini-jeux</button>
       </div>
     </section>
 
     <!-- ===================== MODE 2b : AIM TRAINER ===================== -->
     <section class="screen" id="screen-aim">
-      <h2 class="section-title">🎯 Aim trainer</h2>
+      <h2 class="section-title"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg> Aim trainer</h2>
       <p class="lead center">Clique sur les cibles avant qu'elles disparaissent. 30 secondes, go !</p>
 
       <div class="stats">
@@ -307,23 +307,23 @@
         <p class="rank-comment" id="aim-comment"></p>
 
         <div class="actions center">
-          <button class="btn btn-primary" id="aim-save" type="button">💾 Enregistrer</button>
-          <button class="btn" id="aim-retry" type="button">🔁 Rejouer</button>
+          <button class="btn btn-primary" id="aim-save" type="button"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg> Enregistrer</button>
+          <button class="btn" id="aim-retry" type="button"><svg class="ico" aria-hidden="true"><use href="#i-rotate"/></svg> Rejouer</button>
         </div>
       </div>
 
       <div class="actions center">
-        <button class="btn" data-go="reflexes" type="button">← Retour aux mini-jeux</button>
+        <button class="btn" data-go="reflexes" type="button"><svg class="ico" aria-hidden="true"><use href="#i-arrow-left"/></svg> Retour aux mini-jeux</button>
       </div>
     </section>
 
     <!-- ===================== MODE 3 : CHOIX DU QUIZ ===================== -->
     <section class="screen" id="screen-culture">
-      <h2 class="section-title">🧠 Quiz de culture gaming</h2>
+      <h2 class="section-title"><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> Quiz de culture gaming</h2>
       <p class="lead center">Choisis ton jeu. 20 questions, 15 secondes chacune, et les réponses rapides rapportent plus.</p>
 
       <!-- Cartes générées par script.js à partir de GAMES (data.js) -->
-      <div class="games-grid" id="games-grid"></div>
+      <div id="games-groups"></div>
     </section>
 
     <!-- ===================== QUIZ EN COURS ===================== -->
@@ -351,7 +351,7 @@
         </div>
 
         <div class="actions center">
-          <button class="btn btn-primary" id="quiz-next" type="button" hidden>Question suivante ➜</button>
+          <button class="btn btn-primary" id="quiz-next" type="button" hidden>Question suivante <svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
         </div>
       </div>
 
@@ -363,15 +363,15 @@
         <p class="best-line" id="end-best"></p>
 
         <div class="actions center">
-          <button class="btn btn-primary" id="quiz-replay" type="button">🔁 Rejouer</button>
-          <button class="btn" data-go="culture" type="button">🎮 Changer de jeu</button>
+          <button class="btn btn-primary" id="quiz-replay" type="button"><svg class="ico" aria-hidden="true"><use href="#i-rotate"/></svg> Rejouer</button>
+          <button class="btn" data-go="culture" type="button"><svg class="ico" aria-hidden="true"><use href="#i-gamepad"/></svg> Changer de jeu</button>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    Gamer Arena · fait avec ❤️, de la caféine et trop de parties perdues.
+    Gamer Arena · fait avec de la caféine et trop de parties perdues.
   </footer>
 
   <!-- Notification temporaire -->
@@ -392,6 +392,8 @@
 
   <!-- Données puis logique -->
   <script src="data.js"></script>
+  <script src="data-story.js"></script>
+  <script src="data-souls.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
