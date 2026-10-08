@@ -125,6 +125,7 @@
 
       <div class="panel result" id="onb-result" hidden>
         <p class="eyebrow">Ton premier jeu</p>
+        <div class="result-gif" hidden></div>
         <div class="result-emoji" id="onb-icon"></div>
         <h2 class="result-title" id="onb-title"></h2>
         <p class="result-desc" id="onb-desc"></p>
@@ -154,6 +155,62 @@
 
       <div class="actions center">
         <button class="btn btn-primary btn-big" data-go="classements" type="button"><svg class="ico" aria-hidden="true"><use href="#i-trophy"/></svg> Voir mes classements</button>
+        <button class="btn btn-big" data-go="avatar" type="button"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg> Mon avatar</button>
+        <button class="btn btn-big" data-go="trophees" type="button"><svg class="ico" aria-hidden="true"><use href="#i-medal"/></svg> Mes trophées</button>
+      </div>
+    </section>
+
+    <!-- ===================== AVATAR ===================== -->
+    <section class="screen" id="screen-avatar">
+      <h2 class="page-title"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg> Mon avatar</h2>
+      <p class="lead center">Choisis ton équipement. Chaque trophée débloque un objet.</p>
+
+      <div class="avatar-editor">
+        <div class="hud av-preview">
+          <p class="hud-label">Personnage</p>
+          <div class="av-stage">
+            <div class="avatar-big" id="avatar-preview"></div>
+            <div class="av-pedestal"></div>
+          </div>
+          <div class="av-nameplate">
+            <strong id="avatar-name"></strong>
+            <span id="avatar-level"></span>
+          </div>
+          <div class="av-meter">
+            <div class="av-meter-bar"><span id="avatar-meter"></span></div>
+            <small id="avatar-count"></small>
+          </div>
+          <div class="av-actions">
+            <button class="btn btn-primary" id="avatar-save" type="button"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg> Valider</button>
+            <button class="btn" id="avatar-random" type="button"><svg class="ico" aria-hidden="true"><use href="#i-shuffle"/></svg> Aléatoire</button>
+            <button class="btn" id="avatar-reset" type="button"><svg class="ico" aria-hidden="true"><use href="#i-rotate"/></svg> Reset</button>
+          </div>
+          <p class="av-note">Valider remplace ta photo de profil. L'avatar s'affiche aussi dans les classements.</p>
+        </div>
+
+        <div class="av-main">
+          <nav class="av-slots hud" id="avatar-tabs" aria-label="Emplacements d'équipement"></nav>
+          <div class="hud av-loadout">
+            <p class="hud-label" id="avatar-slot-title">Équipement</p>
+            <div class="av-colors" id="avatar-colors"></div>
+            <div class="av-grid" id="avatar-options"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions center">
+        <button class="btn" data-go="profil" type="button"><svg class="ico" aria-hidden="true"><use href="#i-arrow-left"/></svg> Retour au profil</button>
+        <button class="btn" data-go="trophees" type="button"><svg class="ico" aria-hidden="true"><use href="#i-medal"/></svg> Mes trophées</button>
+      </div>
+    </section>
+
+    <!-- ===================== TROPHÉES ===================== -->
+    <section class="screen" id="screen-trophees">
+      <h2 class="page-title"><svg class="ico" aria-hidden="true"><use href="#i-medal"/></svg> Mes trophées</h2>
+      <p class="lead center" id="trophy-count"></p>
+      <div id="trophy-groups"></div>
+      <div class="actions center">
+        <button class="btn" data-go="profil" type="button"><svg class="ico" aria-hidden="true"><use href="#i-arrow-left"/></svg> Retour au profil</button>
       </div>
     </section>
 
@@ -195,6 +252,7 @@
       </div>
 
       <div class="panel result" id="perso-result" hidden>
+        <div class="result-gif" hidden></div>
         <div class="result-emoji" id="res-emoji"></div>
         <h2 class="result-title" id="res-title"></h2>
         <p class="result-desc" id="res-desc"></p>
@@ -211,6 +269,7 @@
         </div>
 
         <p class="best-game">Ton jeu idéal : <strong id="res-game"></strong></p>
+        <div class="result-trophies" hidden></div>
 
         <div class="actions center">
           <button class="btn" id="perso-restart" type="button"><svg class="ico" aria-hidden="true"><use href="#i-rotate"/></svg> Recommencer</button>
@@ -261,10 +320,12 @@
       </div>
 
       <div class="panel end-panel" id="reaction-end" hidden>
+        <div class="result-gif" hidden></div>
         <p class="eyebrow">Ta moyenne</p>
         <div class="big-value" id="reaction-avg"></div>
         <div class="rank" id="reaction-rank"></div>
         <p class="rank-comment" id="reaction-comment"></p>
+        <div class="result-trophies" hidden></div>
 
         <div class="actions center">
           <button class="btn btn-primary" id="reaction-save" type="button"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg> Enregistrer</button>
@@ -300,11 +361,13 @@
       </div>
 
       <div class="panel end-panel" id="aim-end" hidden>
+        <div class="result-gif" hidden></div>
         <p class="eyebrow">Ton score</p>
         <div class="big-value" id="aim-score"></div>
         <p class="detail" id="aim-detail"></p>
         <div class="rank" id="aim-rank"></div>
         <p class="rank-comment" id="aim-comment"></p>
+        <div class="result-trophies" hidden></div>
 
         <div class="actions center">
           <button class="btn btn-primary" id="aim-save" type="button"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg> Enregistrer</button>
@@ -356,11 +419,13 @@
       </div>
 
       <div class="panel result" id="quiz-end" hidden>
+        <div class="result-gif" hidden></div>
         <p class="eyebrow">Score final</p>
         <div class="big-value" id="end-score"></div>
         <p class="detail" id="end-pct"></p>
         <p class="result-desc" id="end-comment"></p>
         <p class="best-line" id="end-best"></p>
+        <div class="result-trophies" hidden></div>
 
         <div class="actions center">
           <button class="btn btn-primary" id="quiz-replay" type="button"><svg class="ico" aria-hidden="true"><use href="#i-rotate"/></svg> Rejouer</button>
@@ -376,6 +441,7 @@
 
   <!-- Notification temporaire -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="trophy-popup" id="trophy-popup" role="status" aria-live="polite"></div>
 
   <!-- Fenêtre des easter eggs -->
   <div class="egg-modal" id="egg" hidden>
@@ -394,6 +460,8 @@
   <script src="data.js"></script>
   <script src="data-story.js"></script>
   <script src="data-souls.js"></script>
+  <script src="data-trophies.js"></script>
+  <script src="data-avatar.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

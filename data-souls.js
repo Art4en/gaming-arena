@@ -2,7 +2,7 @@
    QUIZ — JEUX SOULS (FromSoftware)
    Dark Souls, Elden Ring, Bloodborne, Sekiro, plus un mix des quatre.
    Chargé après data-story.js : complète GAMES, ICONS, GAME_GROUPS,
-   CULTURE_QUESTIONS et ACTIVITY_BACKGROUNDS.
+   CULTURE_QUESTIONS.
    ========================================================= */
 
 Object.assign(ICONS, {
@@ -35,14 +35,6 @@ Object.assign(GAMES, {
 });
 
 GAME_GROUPS.souls = { title: "Jeux Souls", games: ["darksouls", "eldenring", "bloodborne", "sekiro"], mix: "souls" };
-
-Object.assign(ACTIVITY_BACKGROUNDS, {
-  "quiz-darksouls": { icons: ["flame", "shield", "skull"], tint: "#f59e0b" },
-  "quiz-eldenring": { icons: ["crown", "sun", "swords"], tint: "#eab308" },
-  "quiz-bloodborne": { icons: ["droplet", "moon", "skull"], tint: "#b91c1c" },
-  "quiz-sekiro": { icons: ["sword", "flame", "shield"], tint: "#dc2626" },
-  "quiz-souls": { icons: ["skull", "flame", "sword"], tint: "#71717a" }
-});
 
 Object.assign(CULTURE_QUESTIONS, {
   darksouls: [

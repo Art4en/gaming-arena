@@ -368,25 +368,25 @@ const PERSO_QUESTIONS = [
    Aim trainer : score = cibles touchées + précision (%).
    ========================================================= */
 const REACTION_RANKS = [
-  { max: 200, label: "Radiant",              comment: "Tes réflexes dépassent les lois de la physique. Un peu flippant, honnêtement." },
-  { max: 230, label: "Challenger",           comment: "Un vrai prédateur. Ta souris a peur de toi." },
-  { max: 260, label: "Diamant",              comment: "Solide ! Tu réagis plus vite que ton grille-pain." },
-  { max: 300, label: "Or",                   comment: "Pas mal ! Tu es dans le haut du panier des gamers bien réveillés." },
-  { max: 360, label: "Argent",               comment: "Tu réagis comme quelqu'un qui relit son message avant de l'envoyer." },
-  { max: 450, label: "Bronze",               comment: "Tu as dû faire une sieste pendant le test, avoue." },
-  { max: 600, label: "Fer 4",                comment: "Ton cerveau a encore son chargement en cours. Ça va venir." },
-  { max: Infinity, label: "Bot niveau débutant", comment: "Même un bot aurait cliqué plus vite. Respire, et réessaie." }
+  { max: 200, label: "Radiant", gif: "radiant",              comment: "Tes réflexes dépassent les lois de la physique. Un peu flippant, honnêtement." },
+  { max: 230, label: "Challenger", gif: "challenger",           comment: "Un vrai prédateur. Ta souris a peur de toi." },
+  { max: 260, label: "Diamant", gif: "diamant",              comment: "Solide ! Tu réagis plus vite que ton grille-pain." },
+  { max: 300, label: "Or", gif: "or",                   comment: "Pas mal ! Tu es dans le haut du panier des gamers bien réveillés." },
+  { max: 360, label: "Argent", gif: "argent",               comment: "Tu réagis comme quelqu'un qui relit son message avant de l'envoyer." },
+  { max: 450, label: "Bronze", gif: "bronze",               comment: "Tu as dû faire une sieste pendant le test, avoue." },
+  { max: 600, label: "Fer 4", gif: "fer",                comment: "Ton cerveau a encore son chargement en cours. Ça va venir." },
+  { max: Infinity, label: "Bot niveau débutant", gif: "bot", comment: "Même un bot aurait cliqué plus vite. Respire, et réessaie." }
 ];
 
 const AIM_RANKS = [
-  { min: 120, label: "Radiant",              comment: "Ton aim est tellement propre qu'on dirait un aimbot. Ne touche surtout pas à ta sensibilité." },
-  { min: 105, label: "Challenger",           comment: "Tu vises comme tu parles en vocal : précis et sans pitié." },
-  { min: 90,  label: "Diamant",              comment: "Solide ! Tu rates encore quelques cibles, mais tes doigts sont en forme." },
-  { min: 75,  label: "Or",                   comment: "Tu te débrouilles bien. Il te manque juste un peu de café, ou de sommeil." },
-  { min: 60,  label: "Argent",               comment: "Tu vises comme tu conduis : on a vu pire, mais pas souvent." },
-  { min: 45,  label: "Bronze",               comment: "Tes cibles ont eu le temps de faire le tour de la carte avant que tu cliques." },
-  { min: 30,  label: "Fer 4",                comment: "Tu vises avec la souris de l'ordi de ton grand-père. Ça viendra." },
-  { min: 0,   label: "Bot niveau débutant", comment: "Même un bot aurait fait mieux. On a tous commencé comme ça, courage." }
+  { min: 120, label: "Radiant", gif: "radiant",              comment: "Ton aim est tellement propre qu'on dirait un aimbot. Ne touche surtout pas à ta sensibilité." },
+  { min: 105, label: "Challenger", gif: "challenger",           comment: "Tu vises comme tu parles en vocal : précis et sans pitié." },
+  { min: 90,  label: "Diamant", gif: "diamant",              comment: "Solide ! Tu rates encore quelques cibles, mais tes doigts sont en forme." },
+  { min: 75,  label: "Or", gif: "or",                   comment: "Tu te débrouilles bien. Il te manque juste un peu de café, ou de sommeil." },
+  { min: 60,  label: "Argent", gif: "argent",               comment: "Tu vises comme tu conduis : on a vu pire, mais pas souvent." },
+  { min: 45,  label: "Bronze", gif: "bronze",               comment: "Tes cibles ont eu le temps de faire le tour de la carte avant que tu cliques." },
+  { min: 30,  label: "Fer 4", gif: "fer",                comment: "Tu vises avec la souris de l'ordi de ton grand-père. Ça viendra." },
+  { min: 0,   label: "Bot niveau débutant", gif: "bot", comment: "Même un bot aurait fait mieux. On a tous commencé comme ça, courage." }
 ];
 
 /* Messages affichés quand on clique trop tôt */
@@ -899,12 +899,12 @@ const CULTURE_QUESTIONS = {
 
 /* Commentaire final selon le nombre de bonnes réponses (sur 20) */
 const CULTURE_COMMENTS = [
-  { min: 20, text: "Parfait ! Tu n'as pas besoin de la wiki, c'est la wiki qui a besoin de toi." },
-  { min: 17, text: "Challenger de la culture gaming. Tu lis les patchnotes, toi, et ça se voit." },
-  { min: 13, text: "Diamant : tu tiens la route, mais un peu de Riot-ing ne ferait pas de mal." },
-  { min: 9,  text: "Or : tu connais les bases, il reste quelques erreurs de débutant." },
-  { min: 5,  text: "Fer 4 : un peu de lecture, c'est pas la mort. Relance la partie." },
-  { min: 0,  text: "Bot niveau débutant : désinstalle, réinstalle, recommence." }
+  { min: 20, gif: "radiant", text: "Parfait ! Tu n'as pas besoin de la wiki, c'est la wiki qui a besoin de toi." },
+  { min: 17, gif: "challenger", text: "Challenger de la culture gaming. Tu lis les patchnotes, toi, et ça se voit." },
+  { min: 13, gif: "diamant", text: "Diamant : tu tiens la route, mais un peu de Riot-ing ne ferait pas de mal." },
+  { min: 9,  gif: "or", text: "Or : tu connais les bases, il reste quelques erreurs de débutant." },
+  { min: 5,  gif: "fer", text: "Fer 4 : un peu de lecture, c'est pas la mort. Relance la partie." },
+  { min: 0,  gif: "bot", text: "Bot niveau débutant : désinstalle, réinstalle, recommence." }
 ];
 
 /* =========================================================
@@ -947,23 +947,33 @@ const EASTER_EGGS = {
 };
 
 /* =========================================================
-   FONDS PAR ACTIVITÉ
-   Chaque écran affiche en fond des pictogrammes liés à l'activité.
-   Clé = nom de l'écran ; "quiz-<jeu>" pour chaque quiz de culture.
+   GIFS DE FIN DE TEST (Giphy, recherches « league of legends » et jeux)
+   Un identifiant Giphy (ou un lien complet, ex. Tenor) par titre affiché à la fin d'un test :
+   profils de gamer, rangs (réaction, aim, quiz) et activités conseillées.
    ========================================================= */
-const ACTIVITY_BACKGROUNDS = {
-  accueil:        { icons: ["gamepad", "gamepad", "bot"], tint: "#94a3b8" },
-  personnalite:   { icons: ["gamepad", "star", "star"], tint: "#a78bfa" },
-  reflexes:       { icons: ["target", "zap", "timer"], tint: "#60a5fa" },
-  reaction:       { icons: ["timer", "timer", "zap"], tint: "#38bdf8" },
-  aim:            { icons: ["target", "zap", "crosshair"], tint: "#f87171" },
-  culture:        { icons: ["brain", "help", "book"], tint: "#4ade80" },
-  "quiz-lol":     { icons: ["swords", "swords", "shield"], tint: "#facc15" },
-  "quiz-valorant":{ icons: ["crosshair", "crosshair", "target"], tint: "#fb7185" },
-  "quiz-fortnite":{ icons: ["hammer", "hammer", "star"], tint: "#c084fc" },
-  "quiz-apex":    { icons: ["shield", "target", "skull"], tint: "#fb923c" },
-  "quiz-mix":     { icons: ["shuffle", "brain", "help"], tint: "#2dd4bf" },
-  compte:         { icons: ["lock", "user", "mail"], tint: "#cbd5e1" },
-  bienvenue:      { icons: ["hand", "help", "gift"], tint: "#fbbf24" },
-  profil:         { icons: ["trophy", "medal", "chart"], tint: "#fcd34d" }
+const RESULT_GIFS = {
+  // profils de gamer
+  tryhard: "yTnHjFWKgX2Ted1Uex",
+  rageux: "zVSNjwwLsTQNbtRb68",
+  touriste: "R2qE45X7lhDkxQZ3x7",
+  support: "CTZsoOfJKCtFGulhzs",
+  camper: "XGOnPgiiqcwb1JEQJN",
+  streamer: "https://media.tenor.com/rI-1CcCdRIYAAAAC/sardoche.gif", // Tenor : lien complet
+  // rangs
+  radiant: "4dXkewtnNw9yM",
+  challenger: "26Ec7TKFZ9XED3MM8",
+  diamant: "UuCOSwOlcDNxk5BteB",
+  or: "l378pSWiaPNkZCUhy",
+  argent: "aZaT1wRPYN805ewKxR",
+  bronze: "MSX9oPNlQ4Zmb1DUKS",
+  fer: "z6nDCMWea2mVl3ZxZH",
+  bot: "SS9GYOxO8izCc25qyi",
+  // activités conseillées (test de bienvenue)
+  personnalite: "m0QNCtnOvM50XtDyjj",
+  reaction: "E0G2rsAtvkh7Jvde3n",
+  aim: "sSOR92B1utWccClINS",
+  lol: "uDNF9yB0Q2Kk0",
+  valorant: "I66GjwCFGdl7EpBDQs",
+  fortnite: "sCwS5c7E7Mp5d267vG",
+  apex: "5qFqDz7KYlHFX3tDhf"
 };

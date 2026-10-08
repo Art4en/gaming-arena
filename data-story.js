@@ -2,8 +2,7 @@
    QUIZ — JEUX D'HISTOIRE
    Cyberpunk 2077, The Witcher 3, Red Dead Redemption 2,
    The Last of Us, God of War, plus un mix des cinq.
-   Chargé après data.js : complète GAMES, ICONS, CULTURE_QUESTIONS
-   et ACTIVITY_BACKGROUNDS. Même format de question que data.js.
+   Chargé après data.js : complète GAMES, ICONS, CULTURE_QUESTIONS. Même format de question que data.js.
    ========================================================= */
 
 Object.assign(ICONS, {
@@ -46,15 +45,6 @@ const GAME_GROUPS = {
   competitif: { title: "Jeux compétitifs", games: ["lol", "valorant", "fortnite", "apex"], mix: "mix" },
   histoire: { title: "Jeux d'histoire", games: ["cyberpunk", "witcher", "rdr2", "tlou", "gow"], mix: "histoire" }
 };
-
-Object.assign(ACTIVITY_BACKGROUNDS, {
-  "quiz-cyberpunk": { icons: ["cpu", "bot", "zap"], tint: "#facc15" },
-  "quiz-witcher": { icons: ["moon", "swords", "flame"], tint: "#94a3b8" },
-  "quiz-rdr2": { icons: ["compass", "star", "crosshair"], tint: "#d97706" },
-  "quiz-tlou": { icons: ["leaf", "skull", "heart"], tint: "#84cc16" },
-  "quiz-gow": { icons: ["axe", "shield", "flame"], tint: "#ef4444" },
-  "quiz-histoire": { icons: ["book", "brain", "help"], tint: "#a78bfa" }
-});
 
 Object.assign(CULTURE_QUESTIONS, {
   cyberpunk: [
