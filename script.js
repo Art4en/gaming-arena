@@ -1405,24 +1405,36 @@ function remainingSeconds() {
   return Math.max(0, CULTURE_SECONDS - (performance.now() - culture.startAt) / 1000);
 }
 
+/* La barre se vide toute seule grâce à une transition CSS (fluide, sans recalcul à chaque tick) ;
+   le minuteur JS ne sert qu'au chiffre, à la couleur d'alerte et à la fin du temps. */
+function setTimerBar(fraction, animate) {
+  const bar = $("#quiz-timer-bar");
+  bar.style.transition = animate ? `transform ${CULTURE_SECONDS}s linear, background 0.3s` : "background 0.3s";
+  bar.style.transform = `scaleX(${fraction})`;
+}
+
 function startCultureTimer() {
   stopCultureTimer();
   culture.startAt = performance.now();
-  culture.timerId = setInterval(updateCultureTimer, 100);
+
+  setTimerBar(1, false);              // la barre repart pleine, sans animation
+  void $("#quiz-timer-bar").offsetWidth;
+  setTimerBar(0, true);               // puis se vide sur toute la durée
+
+  culture.timerId = setInterval(updateCultureTimer, 250);
   updateCultureTimer();
 }
 
 function updateCultureTimer() {
   const left = remainingSeconds();
-  const bar = $("#quiz-timer-bar");
-  bar.style.width = `${(left / CULTURE_SECONDS) * 100}%`;
-  bar.classList.toggle("danger", left <= 5);
+  $("#quiz-timer-bar").classList.toggle("danger", left <= 5);
   $("#quiz-timer-text").textContent = Math.ceil(left);
 
   if (left <= 0 && !culture.locked) timeoutCulture();
 }
 
 function stopCultureTimer() {
+  if (culture.timerId !== null) setTimerBar(remainingSeconds() / CULTURE_SECONDS, false); // fige la barre
   clearInterval(culture.timerId);
   culture.timerId = null;
 }

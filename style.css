@@ -108,13 +108,9 @@ button, input { font: inherit; color: inherit; }
   color: var(--text);
   background: var(--panel-2);
 }
-.nav-link.g-perso,
-.nav-link.g-reflex,
-.nav-link.g-culture {
-  color: var(--group);
-}
+.nav-link:hover { color: var(--group, var(--text)); }
 .nav-link.current {
-  color: var(--text);
+  color: var(--group, var(--text));
   background: var(--panel-2);
   border-color: var(--group, var(--muted));
 }
@@ -249,10 +245,27 @@ main { min-height: 70vh; }
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-top: 34px;
 }
+@media (max-width: 640px) {
+  .cards { grid-template-columns: 1fr; }
+}
+/* Carte principale : pleine largeur, plus grande ; cartes secondaires : plus petites */
+.card-main {
+  grid-column: 1 / -1;
+  padding: 40px 28px 34px;
+  border-width: 2px;
+  border-top-width: 6px;
+  border-color: var(--group);
+}
+.card.card-main h2 { font-size: 1.7rem; }
+.card.card-main .card-icon { font-size: 4rem; }
+.card-side { padding: 20px 18px 18px; }
+.card.card-side .card-icon { font-size: 2.2rem; }
+.card.card-side h2 { font-size: 1.05rem; }
+.card.card-side p { font-size: 0.95rem; }
 
 .card {
   display: flex;
@@ -314,7 +327,7 @@ main { min-height: 70vh; }
 .big-value {
   font-family: var(--font-title);
   font-weight: 800;
-  font-size: clamp(2rem, 6vw, 3.4rem);
+  font-size: clamp(2.6rem, 9vw, 4.6rem);
   color: var(--group);
   margin: 6px 0;
 }
@@ -861,8 +874,9 @@ main { min-height: 70vh; }
 .timer-bar {
   height: 100%;
   width: 100%;
-  border-radius: 999px;
   background: var(--group);
+  transform-origin: left center;
+  will-change: transform;
   transition: background 0.3s;
 }
 .timer-bar.danger {
@@ -1226,8 +1240,8 @@ body::after {
 .result-gif img {
   display: block;
   margin: 0 auto;
-  max-width: min(100%, 280px);
-  max-height: 200px;
+  max-width: min(100%, 220px);
+  max-height: 150px;
   border-radius: 10px;
   border: 1px solid var(--border);
 }
@@ -1539,8 +1553,8 @@ body::after {
 /* Avatar visible dans l'interface : barre du haut et accueil */
 .nav-avatar {
   display: block;
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
   border-radius: 6px;
   object-fit: cover;
@@ -1550,7 +1564,7 @@ body::after {
 }
 #account-btn.has-avatar {
   gap: 10px;
-  padding: 3px 3px 3px 14px;
+  padding: 3px 3px 3px 12px;
   min-height: 0;
 }
 #account-btn.has-avatar:hover .nav-avatar { box-shadow: 0 0 14px var(--group); }
@@ -1575,3 +1589,7 @@ body::after {
   box-shadow: 0 0 14px color-mix(in srgb, var(--group) 35%, transparent);
 }
 .hello-avatar img, .hello-avatar svg { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+
+/* Quiz : on éloigne la barre de progression des questions de la barre de temps */
+#quiz-play .progress { margin-top: 30px; }
+#quiz-play .counter { margin-top: 12px; }
