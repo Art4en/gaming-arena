@@ -347,6 +347,37 @@ const TOO_EARLY_MESSAGES = [
   "Ta souris a cliqué toute seule, on a les preuves 🐭"
 ];
 
+/* Typing race : score = mots par minute (WPM) sur la phrase tapée */
+const TYPING_RANKS = [
+  { min: 90, label: "Radiant ☀️",              comment: "Tes doigts tapent plus vite que ton cerveau ne réfléchit. Un peu flippant, honnêtement." },
+  { min: 75, label: "Challenger 👑",           comment: "Un vrai pro du clavier mécanique. Ta team ne t'attend jamais en vocal." },
+  { min: 60, label: "Diamant 💎",              comment: "Solide ! Tu tapes plus vite que tu ne lis les patchnotes." },
+  { min: 45, label: "Or 🥇",                   comment: "Pas mal du tout. Arrête juste de regarder ton clavier." },
+  { min: 35, label: "Argent 🥈",               comment: "Tu tapes comme tu farmes : correct, mais sans aucune précipitation." },
+  { min: 25, label: "Bronze 🥉",               comment: "Chaque lettre est une petite victoire. Courage, soldat." },
+  { min: 15, label: "Fer 4 🔩",                comment: "Le clavier gagne ce combat, pour l'instant." },
+  { min: 0,  label: "Bot niveau débutant 🤖", comment: "Même un bot tape plus vite que ça. Entraîne-toi un peu !" }
+];
+
+/* Phrases à taper, tirées au hasard. Clin d'œil gaming, texte simple (pas de ponctuation piège) */
+const TYPING_SENTENCES = [
+  "le support a ward la riviere pendant que le jungler farmait tranquillement",
+  "ne jamais push seul sans vision sinon c est le reset direct en base",
+  "le headshot est parti tout seul et personne n y croit vraiment",
+  "il a construit une tour en trois secondes pour esquiver le sniper adverse",
+  "l equipe entiere a rage quit juste avant le dernier round de la partie",
+  "le respawn est trop long quand on vient de perdre son dernier skin rare",
+  "personne ne lit les patchnotes mais tout le monde se plaint du nerf",
+  "le smurf a ecrase le lobby et tout le chat est parti en insultes",
+  "la zone se resserre et il reste encore cinquante joueurs sur la carte",
+  "le flash a traverse le mur et personne n a rien vu arriver",
+  "le coach crie en vocal pendant que toute l equipe perd son calme",
+  "un ultime bien place peut renverser completement le cours de la partie",
+  "le ping est monte a trois cents et la partie devient injouable",
+  "il a loot un legendaire juste avant de se faire éliminer bêtement",
+  "la souris de son grand pere n a jamais vu un flick shot aussi rapide"
+];
+
 /* =========================================================
    MODE 3 — QUIZ DE CULTURE GAMING
    Chaque jeu : 20 questions. correct = bonne réponse,
@@ -906,6 +937,7 @@ const ACTIVITY_BACKGROUNDS = {
   reflexes:       { icons: ["🎯", "⚡", "🚦"], tint: "#60a5fa" },
   reaction:       { icons: ["🚦", "⏱️", "⚡"], tint: "#38bdf8" },
   aim:            { icons: ["🎯", "💥", "🔫"], tint: "#f87171" },
+  typing:         { icons: ["⌨️", "⚡", "🔥"], tint: "#fbbf24" },
   culture:        { icons: ["🧠", "❓", "📚"], tint: "#4ade80" },
   "quiz-lol":     { icons: ["🏰", "⚔️", "🛡️"], tint: "#facc15" },
   "quiz-valorant":{ icons: ["💣", "🔫", "🎯"], tint: "#fb7185" },
