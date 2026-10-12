@@ -250,8 +250,15 @@ main { min-height: 70vh; }
   gap: 20px;
   margin-top: 34px;
 }
+/* Carte seule sur la dernière ligne : centrée */
+.cards > .card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 10px);
+}
 @media (max-width: 640px) {
   .cards { grid-template-columns: 1fr; }
+  .cards > .card:last-child:nth-child(odd) { width: auto; justify-self: stretch; }
 }
 /* Carte principale : pleine largeur, plus grande ; cartes secondaires : plus petites */
 .card-main {
