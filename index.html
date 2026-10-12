@@ -297,6 +297,13 @@
           <p>30 secondes pour toucher un maximum de cibles, avec combo.</p>
           <span class="btn btn-primary">Jouer</span>
         </article>
+
+        <article class="card g-reflex" data-go="typing" tabindex="0" role="button">
+          <div class="card-icon"><svg class="ico" aria-hidden="true"><use href="#i-keyboard"/></svg></div>
+          <h2>Typing race</h2>
+          <p>Tape la phrase le plus vite possible, sans trop de fautes.</p>
+          <span class="btn btn-primary">Jouer</span>
+        </article>
       </div>
     </section>
 
@@ -372,6 +379,39 @@
         <div class="actions center">
           <button class="btn btn-primary" id="aim-save" type="button"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg> Enregistrer</button>
           <button class="btn" id="aim-retry" type="button"><svg class="ico" aria-hidden="true"><use href="#i-rotate"/></svg> Rejouer</button>
+        </div>
+      </div>
+
+      <div class="actions center">
+        <button class="btn" data-go="reflexes" type="button"><svg class="ico" aria-hidden="true"><use href="#i-arrow-left"/></svg> Retour aux mini-jeux</button>
+      </div>
+    </section>
+
+    <!-- ===================== MODE 2c : TYPING RACE ===================== -->
+    <section class="screen" id="screen-typing">
+      <h2 class="section-title"><svg class="ico" aria-hidden="true"><use href="#i-keyboard"/></svg> Typing race</h2>
+      <p class="lead center">Tape la phrase ci-dessous le plus vite possible. Le chrono démarre à ta première lettre.</p>
+
+      <div class="stats">
+        <div class="stat"><span>Temps</span><strong id="typing-time">0.0 s</strong></div>
+        <div class="stat"><span>Précision</span><strong id="typing-accuracy">100 %</strong></div>
+      </div>
+
+      <div class="panel">
+        <p class="typing-sentence" id="typing-sentence"></p>
+        <input class="typing-input" id="typing-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Clique ici et commence à taper…">
+      </div>
+
+      <div class="panel end-panel" id="typing-end" hidden>
+        <p class="eyebrow">Ta vitesse</p>
+        <div class="big-value" id="typing-score"></div>
+        <p class="detail" id="typing-detail"></p>
+        <div class="rank" id="typing-rank"></div>
+        <p class="rank-comment" id="typing-comment"></p>
+
+        <div class="actions center">
+          <button class="btn btn-primary" id="typing-save" type="button"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg> Enregistrer</button>
+          <button class="btn" id="typing-retry" type="button"><svg class="ico" aria-hidden="true"><use href="#i-rotate"/></svg> Rejouer</button>
         </div>
       </div>
 

@@ -330,6 +330,7 @@ const onEnter = {
   personnalite: resetPersonality,
   reaction: resetReaction,
   aim: resetAim,
+  typing: resetTyping,
   culture: renderCultureBest,
   compte: resetAuth,
   bienvenue: startOnboarding,
@@ -445,7 +446,7 @@ function finishOnboarding() {
 
 /* Lance une activité (écran ou quiz de culture) */
 function launchActivity(key) {
-  if (["personnalite", "reaction", "aim"].includes(key)) {
+  if (["personnalite", "reaction", "aim", "typing"].includes(key)) {
     showScreen(key);
   } else {
     showScreen("quiz");  // d'abord l'écran…
@@ -571,6 +572,7 @@ $("#perso-share").addEventListener("click", async () => {
 const BOARDS = [
   { key: "reaction", label: "Temps de réaction", icon: "zap" },
   { key: "aim", label: "Aim trainer", icon: "target" },
+  { key: "typing", label: "Typing race", icon: "keyboard" },
   ...Object.values(GAME_GROUPS).flatMap((g) => [...g.games, g.mix]).map((k) => ({ key: k, label: GAMES[k].name, icon: GAMES[k].icon }))
 ];
 let boardKey = "reaction";
@@ -917,7 +919,9 @@ async function renderBoard() {
       ? `${e.value} ms`
       : boardKey === "aim"
         ? `${e.value} pts <small>${e.hits} cibles · ${e.precision} %</small>`
-        : `${e.value} pts <small>${e.correct} / 20 bonnes réponses</small>`;
+        : boardKey === "typing"
+          ? `${e.value} mots/min <small>${e.precision} % précision</small>`
+          : `${e.value} pts <small>${e.correct} / 20 bonnes réponses</small>`;
     const date = new Date(e.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
     const mine = me && e.user_id === me.id;
     const pseudo = e.profiles?.pseudo ?? "Inconnu";
@@ -1305,6 +1309,128 @@ $("#aim-retry").addEventListener("click", startAimCountdown);
 $("#aim-save").addEventListener("click", saveAim);
 
 /* =========================================================
+   MODE 2c — TYPING RACE
+   Score = mots par minute (WPM) une fois la phrase tapée.
+   La précision = part des caractères corrects dans la phrase finale.
+   ========================================================= */
+const typingInput = $("#typing-input");
+const typing = { text: "", started: false, finished: false, startAt: 0, tickTimer: null, wpm: 0, accuracy: 0 };
+
+function pickTypingSentence() {
+  return TYPING_SENTENCES[randInt(0, TYPING_SENTENCES.length - 1)];
+}
+
+function renderTypingSentence() {
+  $("#typing-sentence").innerHTML = [...typing.text]
+    .map((ch) => `<span>${escapeHTML(ch)}</span>`)
+    .join("");
+}
+
+function resetTyping() {
+  clearInterval(typing.tickTimer);
+  typing.text = pickTypingSentence();
+  typing.started = false;
+  typing.finished = false;
+  typing.startAt = 0;
+
+  renderTypingSentence();
+  typingInput.value = "";
+  typingInput.disabled = false;
+  $("#typing-time").textContent = "0.0 s";
+  $("#typing-accuracy").textContent = "100 %";
+  $("#typing-end").hidden = true;
+  $("#typing-save").disabled = false;
+  typingInput.focus();
+}
+
+function tickTyping() {
+  const elapsed = (performance.now() - typing.startAt) / 1000;
+  $("#typing-time").textContent = `${elapsed.toFixed(1)} s`;
+}
+
+/* Colorie chaque lettre (bonne / mauvaise / en cours) et renvoie la précision actuelle */
+function updateTypingDisplay(value) {
+  const spans = $$("#typing-sentence span");
+  let correct = 0;
+  spans.forEach((span, i) => {
+    span.classList.remove("correct", "wrong", "current");
+    if (i < value.length) {
+      const ok = value[i] === typing.text[i];
+      span.classList.add(ok ? "correct" : "wrong");
+      if (ok) correct += 1;
+    } else if (i === value.length) {
+      span.classList.add("current");
+    }
+  });
+  return value.length ? Math.round((correct / value.length) * 100) : 100;
+}
+
+function finishTyping(value) {
+  typing.finished = true;
+  clearInterval(typing.tickTimer);
+  typingInput.disabled = true;
+
+  const elapsedMs = Math.max(1, performance.now() - typing.startAt);
+  const words = typing.text.trim().split(/\s+/).length;
+  const wpm = Math.max(1, Math.round(words / (elapsedMs / 60000)));
+
+  let correct = 0;
+  for (let i = 0; i < typing.text.length; i++) {
+    if (value[i] === typing.text[i]) correct += 1;
+  }
+  const accuracy = Math.round((correct / typing.text.length) * 100);
+
+  typing.wpm = wpm;
+  typing.accuracy = accuracy;
+
+  $("#typing-time").textContent = `${(elapsedMs / 1000).toFixed(1)} s`;
+  $("#typing-accuracy").textContent = `${accuracy} %`;
+
+  const rank = TYPING_RANKS.find((r) => wpm >= r.min);
+  $("#typing-score").textContent = `${wpm} mots/min`;
+  $("#typing-detail").textContent = `Précision ${accuracy} % · ${(elapsedMs / 1000).toFixed(1)} s`;
+  $("#typing-rank").textContent = rank.label;
+  $("#typing-comment").textContent = rank.comment;
+  $("#typing-end").hidden = false;
+}
+
+typingInput.addEventListener("input", (e) => {
+  if (typing.finished) return;
+  let value = e.target.value;
+
+  if (!typing.started && value.length > 0) {
+    typing.started = true;
+    typing.startAt = performance.now();
+    typing.tickTimer = setInterval(tickTyping, 100);
+  }
+
+  // On ne va pas plus loin que la phrase à taper
+  if (value.length > typing.text.length) {
+    value = value.slice(0, typing.text.length);
+    e.target.value = value;
+  }
+
+  const accuracy = updateTypingDisplay(value);
+  $("#typing-accuracy").textContent = `${accuracy} %`;
+
+  if (value.length === typing.text.length) finishTyping(value);
+});
+
+async function saveTyping() {
+  $("#typing-save").disabled = true;
+  const ok = await saveScore("typing", { value: typing.wpm, precision: typing.accuracy });
+  if (!ok) {
+    $("#typing-save").disabled = false;
+    return;
+  }
+  toast("✅ Score enregistré !");
+  goToBoard("typing");
+}
+
+$("#typing-save").addEventListener("click", saveTyping);
+$("#typing-retry").addEventListener("click", resetTyping);
+
+/* =========================================================
    MODE 3 — QUIZ DE CULTURE GAMING
    ========================================================= */
 const CULTURE_TOTAL = 20;
@@ -1443,6 +1569,7 @@ function stopAllGames() {
   clearTimeout(reaction.timer);
   stopAimTimers();
   aim.running = false;
+  clearInterval(typing.tickTimer);
   stopCultureTimer();
 }
 

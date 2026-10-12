@@ -32,7 +32,8 @@
 #screen-personnalite { --group: var(--c-perso); }
 #screen-reflexes,
 #screen-reaction,
-#screen-aim { --group: var(--c-reflex); }
+#screen-aim,
+#screen-typing { --group: var(--c-reflex); }
 #screen-culture,
 #screen-quiz { --group: var(--c-culture); }
 #screen-scores { --group: var(--c-reflex); }
@@ -711,6 +712,45 @@ main { min-height: 70vh; }
 @keyframes pop {
   from { transform: scale(0.3); opacity: 0; }
   to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ---------- Typing race ---------- */
+.typing-sentence {
+  margin: 0 0 18px;
+  font-family: var(--font-title);
+  font-size: clamp(1.1rem, 2.6vw, 1.5rem);
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+  text-align: center;
+  white-space: pre-wrap;
+}
+.typing-sentence span { color: var(--muted); }
+.typing-sentence span.correct { color: var(--good); }
+.typing-sentence span.wrong {
+  color: var(--bad);
+  text-decoration: underline;
+}
+.typing-sentence span.current {
+  background: var(--group);
+  color: var(--bg);
+  border-radius: 3px;
+}
+
+.typing-input {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1.1rem;
+  text-align: center;
+}
+.typing-input:focus {
+  outline: none;
+  border-color: var(--group);
 }
 
 /* ---------- Classement ---------- */

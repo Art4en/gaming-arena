@@ -15,6 +15,7 @@ const ICONS = {
   "arrow-right": '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
   rotate: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
   clipboard: '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+  keyboard: '<path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/>',
   zap: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
   timer: '<line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/>',
   save: '<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>',
@@ -396,6 +397,37 @@ const TOO_EARLY_MESSAGES = [
   "Faux départ ! Même les sprinters attendent le pistolet",
   "Attends le vert, champion. Le bot, lui, ne triche pas",
   "Ta souris a cliqué toute seule, on a les preuves"
+];
+
+/* Typing race : score = mots par minute (WPM) sur la phrase tapée */
+const TYPING_RANKS = [
+  { min: 90, label: "Radiant",              comment: "Tes doigts tapent plus vite que ton cerveau ne réfléchit. Un peu flippant, honnêtement." },
+  { min: 75, label: "Challenger",           comment: "Un vrai pro du clavier mécanique. Ta team ne t'attend jamais en vocal." },
+  { min: 60, label: "Diamant",              comment: "Solide ! Tu tapes plus vite que tu ne lis les patchnotes." },
+  { min: 45, label: "Or",                   comment: "Pas mal du tout. Arrête juste de regarder ton clavier." },
+  { min: 35, label: "Argent",               comment: "Tu tapes comme tu farmes : correct, mais sans aucune précipitation." },
+  { min: 25, label: "Bronze",               comment: "Chaque lettre est une petite victoire. Courage, soldat." },
+  { min: 15, label: "Fer 4",                comment: "Le clavier gagne ce combat, pour l'instant." },
+  { min: 0,  label: "Bot niveau débutant", comment: "Même un bot tape plus vite que ça. Entraîne-toi un peu !" }
+];
+
+/* Phrases à taper, tirées au hasard. Clin d'œil gaming, texte simple (pas de ponctuation piège) */
+const TYPING_SENTENCES = [
+  "le support a ward la riviere pendant que le jungler farmait tranquillement",
+  "ne jamais push seul sans vision sinon c est le reset direct en base",
+  "le headshot est parti tout seul et personne n y croit vraiment",
+  "il a construit une tour en trois secondes pour esquiver le sniper adverse",
+  "l equipe entiere a rage quit juste avant le dernier round de la partie",
+  "le respawn est trop long quand on vient de perdre son dernier skin rare",
+  "personne ne lit les patchnotes mais tout le monde se plaint du nerf",
+  "le smurf a ecrase le lobby et tout le chat est parti en insultes",
+  "la zone se resserre et il reste encore cinquante joueurs sur la carte",
+  "le flash a traverse le mur et personne n a rien vu arriver",
+  "le coach crie en vocal pendant que toute l equipe perd son calme",
+  "un ultime bien place peut renverser completement le cours de la partie",
+  "le ping est monte a trois cents et la partie devient injouable",
+  "il a loot un legendaire juste avant de se faire éliminer bêtement",
+  "la souris de son grand pere n a jamais vu un flick shot aussi rapide"
 ];
 
 /* =========================================================
