@@ -65,7 +65,9 @@ const store = {
 const STORAGE = {
   best: "gamerArena.best.v1",      // meilleur score de culture, affiché sur le menu
   intro: "gamerArena.intro.v1",    // test de bienvenue déjà fait sur cet appareil
-  pending: "gamerArena.pending.v1" // activité recommandée, lancée dès la connexion
+  pending: "gamerArena.pending.v1", // activité recommandée, lancée dès la connexion
+  trophies: "gamerArena.trophies.v1", // trophées et compteurs, par compte
+  avatar: "gamerArena.avatar.v1"      // dernier avatar personnalisé, par compte
 };
 
 /* Notification temporaire en bas de l'écran */
@@ -193,13 +195,19 @@ async function logout() {
 }
 
 /* Met à jour le bouton du haut et le message d'accueil */
+/* Avatar du joueur connecté : sa photo ou son personnage, sinon le personnage par défaut */
+const myAvatarHTML = (cls) => avatarHTML(me.avatar || avatarCode(savedAvatarConfig()), `Avatar de ${me.pseudo}`, cls);
+
 function refreshAccountUI() {
   const btn = $("#account-btn");
-  btn.innerHTML = me ? `${ico("user")} ${escapeHTML(me.pseudo)}` : "S'inscrire";
+  btn.innerHTML = me ? `<span class="nav-pseudo">${escapeHTML(me.pseudo)}</span>${myAvatarHTML("nav-avatar")}` : "S'inscrire";
+  btn.classList.toggle("has-avatar", Boolean(me));
   btn.dataset.go = me ? "profil" : "compte";
 
-  $("#hello").textContent = me
-    ? `Salut ${me.pseudo}, prêt à te faire humilier ?`
+  const hello = $("#hello");
+  hello.classList.toggle("has-avatar", Boolean(me));
+  hello.innerHTML = me
+    ? `<span class="hello-avatar">${myAvatarHTML()}</span><span>Salut ${escapeHTML(me.pseudo)}, prêt à te faire humilier ?</span>`
     : "Pas encore de compte ? Crée-le en 30 secondes, ton score t'attendra au classement.";
 }
 
@@ -278,6 +286,7 @@ $("#avatar-input").addEventListener("change", async (e) => {
     if (error) return toast(`Photo non enregistrée : ${error.message}`);
     me.avatar = avatar;
     renderProfile();
+    refreshAccountUI();
     toast("Photo de profil mise à jour !");
   } catch (err) {
     toast("Impossible de lire cette image.");
@@ -290,7 +299,7 @@ $("#avatar-input").addEventListener("change", async (e) => {
 let currentScreen = "accueil";
 
 /* Écrans réservés aux personnes connectées */
-const PROTECTED_SCREENS = ["profil", "classements", "bienvenue"];
+const PROTECTED_SCREENS = ["profil", "classements", "trophees", "avatar", "bienvenue"];
 
 /* Sans compte, seuls le test de bienvenue et l'inscription sont accessibles */
 const GATE_SCREENS = ["compte", "bienvenue"];
@@ -300,16 +309,19 @@ function gateScreen() {
   return store.get(STORAGE.intro, false) ? "compte" : "bienvenue";
 }
 
-/* Fond de l'activité : pictogrammes en mosaïque + teinte de couleur */
-function setActivityBg(key) {
-  const bg = ACTIVITY_BACKGROUNDS[key] || ACTIVITY_BACKGROUNDS.accueil;
-  const shapes = [[15, 15], [115, 10], [60, 105], [150, 125]]
-    .map(([x, y], i) => `<g transform="translate(${x} ${y}) scale(2.2)">${ICONS[bg.icons[i % bg.icons.length]]}</g>`)
-    .join("");
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none" stroke="#e2e8f0" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${shapes}</svg>`;
-  const root = document.documentElement.style;
-  root.setProperty("--activity-bg", `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
-  root.setProperty("--activity-tint", bg.tint);
+/* Adresse d'un GIF : identifiant Giphy, ou lien complet (Tenor…) */
+const gifUrl = (id) => (id.startsWith("http") ? id : `https://media.giphy.com/media/${id}/giphy.gif`);
+
+/* GIF en haut d'un écran de résultat : celui qui correspond au titre obtenu (clé de RESULT_GIFS) */
+function showResultGif(screenSel, key) {
+  const slot = $(".result-gif", $(screenSel));
+  const id = RESULT_GIFS[key];
+  if (!id) { slot.hidden = true; return; }
+  const url = gifUrl(id);
+  const source = url.includes("tenor.com") ? "Tenor" : "GIPHY";
+  slot.innerHTML = `<img src="${url}" alt="GIF drôle" loading="lazy"><small>via ${source}</small>`;
+  slot.querySelector("img").addEventListener("error", () => { slot.hidden = true; });
+  slot.hidden = false;
 }
 
 /* Actions à lancer à l'arrivée sur un écran (remise à zéro) */
@@ -322,6 +334,8 @@ const onEnter = {
   compte: resetAuth,
   bienvenue: startOnboarding,
   profil: renderProfile,
+  trophees: renderTrophies,
+  avatar: renderAvatarEditor,
   classements: renderClassements
 };
 
@@ -337,7 +351,6 @@ function showScreen(name) {
   $$(".screen").forEach((s) => s.classList.toggle("active", s === target));
   $$(".nav-link").forEach((l) => l.classList.toggle("current", l.dataset.go === name));
   currentScreen = name;
-  setActivityBg(name);
 
   if (onEnter[name]) onEnter[name]();
 
@@ -422,6 +435,7 @@ function finishOnboarding() {
   onb.result = best;
 
   const activity = ONBOARDING_ACTIVITIES[best];
+  showResultGif("#onb-result", best);
   $("#onb-icon").innerHTML = ico(activity.icon);
   $("#onb-title").textContent = activity.name;
   $("#onb-desc").textContent = `${activity.desc} C'est ce qu'on te conseille pour commencer.`;
@@ -524,6 +538,8 @@ function showPersoResult() {
   const p = PROFILES[key];
   perso.result = key;
 
+  showResultGif("#perso-result", key);
+  showNewTrophies("#perso-result", awardTrophies("perso", { profile: key }));
   $("#res-emoji").innerHTML = ico(p.icon);
   $("#res-title").textContent = p.title;
   $("#res-desc").textContent = p.description;
@@ -583,13 +599,279 @@ async function saveScore(board, data) {
   return true;
 }
 
+/* =========================================================
+   TROPHÉES (définitions dans data-trophies.js)
+   Gardés sur l'appareil, séparément pour chaque compte.
+   ========================================================= */
+const emptyTrophyData = () => ({ unlocked: {}, stats: { games: 0, played: {}, quizGames: [], profiles: [] } });
+
+function getTrophyData() {
+  const saved = store.get(STORAGE.trophies, {})[me.id];
+  const base = emptyTrophyData();
+  return saved ? { unlocked: saved.unlocked ?? {}, stats: { ...base.stats, ...saved.stats } } : base;
+}
+
+function saveTrophyData(data) {
+  const all = store.get(STORAGE.trophies, {});
+  all[me.id] = data;
+  store.set(STORAGE.trophies, all);
+}
+
+/* Compte la partie, puis renvoie la liste des trophées débloqués grâce à elle */
+function awardTrophies(event, payload = {}) {
+  if (!me) return [];
+  const data = getTrophyData();
+  const s = data.stats;
+  s.games += 1;
+  s.played[event] = (s.played[event] ?? 0) + 1;
+  if (event === "quiz" && QUIZ_GAME_KEYS.includes(payload.game) && !s.quizGames.includes(payload.game)) s.quizGames.push(payload.game);
+  if (event === "perso" && !s.profiles.includes(payload.profile)) s.profiles.push(payload.profile);
+
+  const ctx = { event, stats: s, bests: store.get(STORAGE.best, {}), ...payload };
+  const fresh = TROPHIES.filter((t) => !data.unlocked[t.id] && t.test(ctx));
+  const now = new Date().toISOString();
+  fresh.forEach((t) => { data.unlocked[t.id] = now; });
+  saveTrophyData(data);
+  return fresh;
+}
+
+const trophyRewardLine = (t) => `<small class="trophy-reward">Avatar : ${trophyReward(t)}</small>`;
+const trophyBadge = (t) => `<span class="trophy-badge tier-${t.tier}">${ico(t.icon)}</span>`;
+
+/* Notification de trophée avec un GIF meme : on met en avant le plus rare, les autres sont comptés */
+const TROPHY_RANK = { bronze: 1, argent: 2, or: 3 };
+
+function showTrophyPopup(fresh) {
+  const top = [...fresh].sort((a, b) => TROPHY_RANK[b.tier] - TROPHY_RANK[a.tier])[0];
+  const gifs = TROPHY_GIFS[top.tier];
+  const popup = $("#trophy-popup");
+  const others = fresh.length - 1;
+  popup.innerHTML = `
+    <img src="${gifUrl(gifs[randInt(0, gifs.length - 1)])}" alt="GIF meme">
+    <div class="trophy-popup-body">
+      ${trophyBadge(top)}
+      <span>
+        <small>Trophée débloqué · ${TROPHY_TIERS[top.tier]}</small>
+        <strong>${top.name}</strong>
+        <small>Avatar : ${trophyReward(top)}</small>
+        ${others > 0 ? `<small>+ ${others} autre${others > 1 ? "s" : ""} trophée${others > 1 ? "s" : ""}</small>` : ""}
+      </span>
+    </div>`;
+  popup.querySelector("img").addEventListener("error", (e) => e.target.remove());
+  // la notification traverse l'écran puis disparaît toute seule (animation CSS)
+  popup.classList.remove("show");
+  void popup.offsetWidth; // relance l'animation si une autre notification passait déjà
+  popup.classList.add("show");
+}
+$("#trophy-popup").addEventListener("animationend", (e) => e.currentTarget.classList.remove("show"));
+
+/* Affiche les trophées gagnés dans l'écran de résultat, et une notification */
+function showNewTrophies(screenSel, fresh) {
+  const slot = $(".result-trophies", $(screenSel));
+  if (!fresh.length) { slot.hidden = true; return; }
+  const title = fresh.length > 1 ? "Trophées débloqués" : "Trophée débloqué";
+  slot.innerHTML = `<p class="eyebrow">${title}</p>` +
+    fresh.map((t) => `
+      <div class="trophy-chip">
+        ${trophyBadge(t)}
+        <span><strong>${t.name}</strong><small>${t.desc}</small>${trophyRewardLine(t)}</span>
+      </div>`).join("");
+  slot.hidden = false;
+  showTrophyPopup(fresh);
+}
+
+/* Page « Mes trophées » : triés par rareté (or d'abord), débloqués ou non */
+const TROPHY_CATEGORIES = { react: "Temps de réaction", aim: "Aim trainer", quiz: "Quiz de culture", perso: "Personnalité" };
+const TROPHY_RARITY = [
+  { tier: "or", label: "Or · Rares" },
+  { tier: "argent", label: "Argent · Peu communs" },
+  { tier: "bronze", label: "Bronze · Communs" }
+];
+
+function renderTrophies() {
+  if (!me) return;
+  const { unlocked } = getTrophyData();
+  const done = TROPHIES.filter((t) => unlocked[t.id]).length;
+  $("#trophy-count").textContent = `${done} / ${TROPHIES.length} trophées débloqués`;
+
+  $("#trophy-groups").innerHTML = TROPHY_RARITY.map(({ tier, label }) => {
+    const list = TROPHIES.filter((t) => t.tier === tier);
+    return `
+      <h3 class="games-group-title">${label} · ${list.filter((t) => unlocked[t.id]).length} / ${list.length}</h3>
+      <div class="trophy-grid">${list.map((t) => {
+        const date = unlocked[t.id];
+        const category = TROPHY_CATEGORIES[t.id.split("-")[0]] ?? "Général";
+        return `
+          <div class="trophy-card ${date ? "unlocked" : "locked"}">
+            ${trophyBadge(t)}
+            <strong>${t.name}</strong>
+            <small>${t.desc}</small>
+            <small class="trophy-reward">Avatar : ${trophyReward(t)}</small>
+            <span class="trophy-state">${category} · ${date ? new Date(date).toLocaleDateString("fr-FR") : "à débloquer"}</span>
+          </div>`;
+      }).join("")}</div>`;
+  }).join("");
+}
+
+/* =========================================================
+   AVATAR : affichage et éditeur (objets dans data-avatar.js)
+   Le personnage est enregistré dans la colonne « avatar » du profil
+   sous la forme « char:{json} » : visible par tout le monde, sans changer la base.
+   ========================================================= */
+
+/* HTML d'un avatar : personnage dessiné ou photo */
+function avatarHTML(value, alt = "", cls = "") {
+  if (isAvatarCode(value)) {
+    const cfg = avatarFromCode(value);
+    if (cfg) return avatarSVG(cfg, cls);
+  }
+  return value ? `<img class="${cls}" src="${escapeHTML(value)}" alt="${escapeHTML(alt)}">` : "";
+}
+
+/* Objet d'avatar offert par un trophée (ou null) */
+function trophyReward(trophy) {
+  const unlock = AVATAR_UNLOCKS[trophy.id];
+  if (!unlock) return null;
+  const slot = AVATAR_SLOTS.find((s) => s.key === unlock.slot);
+  return `${unlock.item.name} (${slot.label.toLowerCase()})`;
+}
+
+const avatarState = { cfg: null, tab: "hair" };
+const avatarItemUnlocked = (item, unlocked) => !item.trophy || Boolean(unlocked[item.trophy]);
+
+/* Config affichée à l'ouverture : celle du profil, sinon la dernière gardée sur l'appareil */
+function savedAvatarConfig() {
+  if (isAvatarCode(me.avatar)) {
+    const cfg = avatarFromCode(me.avatar);
+    if (cfg) return cfg;
+  }
+  return avatarConfig(store.get(STORAGE.avatar, {})[me.id]);
+}
+
+function renderAvatarEditor() {
+  if (!me) return;
+  avatarState.cfg = savedAvatarConfig();
+  drawAvatarEditor();
+}
+
+function drawAvatarEditor() {
+  const { unlocked } = getTrophyData();
+  const cfg = avatarState.cfg;
+  const unlockIds = Object.keys(AVATAR_UNLOCKS);
+  const got = unlockIds.filter((id) => unlocked[id]).length;
+
+  $("#avatar-preview").innerHTML = avatarSVG(cfg);
+  $("#avatar-name").textContent = me.pseudo;
+  $("#avatar-level").textContent = `NIV. ${1 + TROPHIES.filter((t) => unlocked[t.id]).length}`;
+  $("#avatar-meter").style.width = `${(got / unlockIds.length) * 100}%`;
+  $("#avatar-count").textContent = `${got} / ${unlockIds.length} objets débloqués`;
+
+  $("#avatar-tabs").innerHTML = AVATAR_SLOTS.map((s) => {
+    const part = AVATAR_PARTS[s.key] && avatarPart(s.key, cfg[s.key]);
+    const equipped = part ? (part.id ? part.name : "—") : "";
+    return `
+      <button class="av-slot ${s.key === avatarState.tab ? "active" : ""}" data-av-tab="${s.key}" type="button">
+        ${ico(s.icon)}
+        <span><strong>${s.label}</strong><small>${equipped}</small></span>
+      </button>`;
+  }).join("");
+
+  const slot = AVATAR_SLOTS.find((s) => s.key === avatarState.tab);
+  $("#avatar-slot-title").textContent = slot.label;
+
+  // Couleurs : seulement si l'objet choisi en utilise une
+  const part = AVATAR_PARTS[slot.key] ? avatarPart(slot.key, cfg[slot.key]) : null;
+  const marker = slot.color === "hairColor" ? "$H" : "$T";
+  const usesColor = slot.paletteOnly || (part && ((part.svg || "") + (part.back || "")).includes(marker));
+  $("#avatar-colors").innerHTML = slot.colors && usesColor
+    ? slot.colors.map((c) =>
+        `<button class="av-swatch ${cfg[slot.color] === c ? "selected" : ""}" data-av-color="${slot.color}" data-value="${c}" style="background:${c}" type="button" aria-label="Couleur ${c}"></button>`
+      ).join("")
+    : "";
+
+  // Objets : la couleur du cadre dépend de la rareté du trophée qui les débloque
+  $("#avatar-options").innerHTML = slot.paletteOnly ? "" : AVATAR_PARTS[slot.key].map((item) => {
+    const locked = !avatarItemUnlocked(item, unlocked);
+    const needed = item.trophy ? TROPHIES.find((t) => t.id === item.trophy) : null;
+    const tier = needed ? needed.tier : "libre";
+    const selected = cfg[slot.key] === item.id;
+    const tag = selected ? "Équipé" : locked ? `${ico("lock")} Verrouillé` : needed ? TROPHY_TIERS[needed.tier] : "Libre";
+    return `
+      <button class="av-item rarity-${tier} ${selected ? "selected" : ""} ${locked ? "locked" : ""}" data-av-slot="${slot.key}" data-av-id="${item.id}" type="button">
+        <span class="av-tag">${tag}</span>
+        <span class="av-thumb">${avatarSVG({ ...cfg, [slot.key]: item.id })}</span>
+        <strong>${item.name}</strong>
+        <small>${needed ? `${ico("medal")} ${needed.name}` : "Objet de base"}</small>
+      </button>`;
+  }).join("");
+}
+
+$("#screen-avatar").addEventListener("click", (e) => {
+  const tab = e.target.closest("[data-av-tab]");
+  const swatch = e.target.closest("[data-av-color]");
+  const item = e.target.closest("[data-av-id]");
+
+  if (tab) {
+    avatarState.tab = tab.dataset.avTab;
+  } else if (swatch) {
+    avatarState.cfg[swatch.dataset.avColor] = swatch.dataset.value;
+  } else if (item) {
+    const part = avatarPart(item.dataset.avSlot, item.dataset.avId);
+    if (!avatarItemUnlocked(part, getTrophyData().unlocked)) {
+      const needed = TROPHIES.find((t) => t.id === part.trophy);
+      return toast(`Pour débloquer cet objet : trophée « ${needed.name} »`);
+    }
+    avatarState.cfg[item.dataset.avSlot] = part.id;
+  } else {
+    return;
+  }
+  drawAvatarEditor();
+});
+
+$("#avatar-reset").addEventListener("click", () => {
+  avatarState.cfg = avatarConfig(null);
+  drawAvatarEditor();
+});
+
+$("#avatar-random").addEventListener("click", () => {
+  const { unlocked } = getTrophyData();
+  const pick = (list) => list[randInt(0, list.length - 1)];
+  const cfg = avatarConfig(null);
+  Object.keys(AVATAR_PARTS).forEach((slot) => {
+    cfg[slot] = pick(AVATAR_PARTS[slot].filter((p) => avatarItemUnlocked(p, unlocked))).id;
+  });
+  cfg.skin = pick(AVATAR_SKINS);
+  cfg.hairColor = pick(AVATAR_HAIR_COLORS);
+  cfg.topColor = pick(AVATAR_TOP_COLORS);
+  avatarState.cfg = cfg;
+  drawAvatarEditor();
+});
+
+$("#avatar-save").addEventListener("click", async () => {
+  const cfg = avatarConfig(avatarState.cfg);
+  const { unlocked } = getTrophyData();
+  if (Object.keys(AVATAR_PARTS).some((slot) => !avatarItemUnlocked(avatarPart(slot, cfg[slot]), unlocked))) {
+    return toast("Certains objets ne sont pas encore débloqués.");
+  }
+  const code = avatarCode(cfg);
+  const { error } = await db.from("profiles").update({ avatar: code }).eq("id", me.id);
+  if (error) return toast(`Avatar non enregistré : ${error.message}`);
+
+  me.avatar = code;
+  const saved = store.get(STORAGE.avatar, {});
+  saved[me.id] = cfg;
+  store.set(STORAGE.avatar, saved);
+  refreshAccountUI();
+  toast("Avatar enregistré !");
+});
+
 function renderProfile() {
   if (!me) return;
   $("#profil-pseudo").textContent = me.pseudo;
   $("#profil-email").textContent = me.email;
   $("#profil-since").textContent = `Membre depuis le ${new Date(me.createdAt).toLocaleDateString("fr-FR")}`;
   $("#profil-avatar").innerHTML = me.avatar
-    ? `<img src="${escapeHTML(me.avatar)}" alt="Photo de ${escapeHTML(me.pseudo)}">`
+    ? avatarHTML(me.avatar, `Photo de ${me.pseudo}`)
     : ico("user");
 }
 
@@ -639,7 +921,7 @@ async function renderBoard() {
     const date = new Date(e.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
     const mine = me && e.user_id === me.id;
     const pseudo = e.profiles?.pseudo ?? "Inconnu";
-    const thumb = e.profiles?.avatar ? `<img class="row-avatar" src="${escapeHTML(e.profiles.avatar)}" alt="">` : "";
+    const thumb = e.profiles?.avatar ? avatarHTML(e.profiles.avatar, "", "row-avatar") : "";
     const classes = ["score-row", mine ? "mine" : "", e.id === lastSavedId ? "fresh" : ""].join(" ");
 
     return `
@@ -681,7 +963,7 @@ function goToBoard(key) {
    MODE 2a — TEMPS DE RÉACTION
    ========================================================= */
 const REACTION_ROUNDS = 5;
-const reaction = { state: "idle", attempt: 0, times: [], timer: null, startedAt: 0, average: 0 };
+const reaction = { state: "idle", attempt: 0, times: [], timer: null, startedAt: 0, average: 0, earlies: 0 };
 const reactionZone = $("#reaction-zone");
 
 function setReactionZone(state, title, sub = "") {
@@ -695,6 +977,7 @@ function resetReaction() {
   reaction.state = "idle";
   reaction.attempt = 0;
   reaction.times = [];
+  reaction.earlies = 0;
   $("#reaction-end").hidden = true;
   $("#reaction-counter").textContent = `0 / ${REACTION_ROUNDS}`;
   $("#reaction-save").disabled = false;
@@ -720,6 +1003,7 @@ function startReactionRound() {
 function tooEarly() {
   clearTimeout(reaction.timer);
   reaction.state = "early";
+  reaction.earlies += 1;
   const msg = TOO_EARLY_MESSAGES[randInt(0, TOO_EARLY_MESSAGES.length - 1)];
   setReactionZone("early", msg, "Clique pour réessayer (ce faux départ ne compte pas).");
 }
@@ -748,6 +1032,8 @@ function finishReaction() {
   $("#reaction-avg").textContent = `${reaction.average} ms`;
   $("#reaction-rank").textContent = rank.label;
   $("#reaction-comment").textContent = rank.comment;
+  showResultGif("#reaction-end", rank.gif);
+  showNewTrophies("#reaction-end", awardTrophies("reaction", { avg: reaction.average, best: Math.min(...reaction.times), earlies: reaction.earlies }));
   $("#reaction-end").hidden = false;
 }
 
@@ -995,6 +1281,8 @@ function endAim() {
   $("#aim-detail").textContent = `${aim.hits} cibles touchées · précision ${aim.precision} % · combo max x${aim.maxCombo}`;
   $("#aim-rank").textContent = rank.label;
   $("#aim-comment").textContent = rank.comment;
+  showResultGif("#aim-end", rank.gif);
+  showNewTrophies("#aim-end", awardTrophies("aim", { score: aim.score, hits: aim.hits, precision: aim.precision, maxCombo: aim.maxCombo }));
   $("#aim-end").hidden = false;
 
   // Easter egg : aucune cible touchée
@@ -1062,9 +1350,11 @@ function startCulture(gameKey) {
   culture.index = 0;
   culture.correct = 0;
   culture.points = 0;
+  culture.streak = 0;
+  culture.maxStreak = 0;
+  culture.fastCorrect = 0;
 
   $("#quiz-game-title").innerHTML = `${ico(GAMES[gameKey].icon)} ${GAMES[gameKey].name}`;
-  setActivityBg(`quiz-${gameKey}`);
   showOnly(["quiz-play", "quiz-end"], "quiz-play");
   renderCultureQuestion();
 }
@@ -1182,9 +1472,13 @@ function answerCulture(text) {
     // 100 pts de base + bonus proportionnel au temps restant (jusqu'à +100)
     const bonus = Math.round((left / CULTURE_SECONDS) * 100);
     culture.correct += 1;
+    culture.streak += 1;
+    culture.maxStreak = Math.max(culture.maxStreak, culture.streak);
+    if (left >= CULTURE_SECONDS - 3) culture.fastCorrect += 1;
     culture.points += 100 + bonus;
     showFeedback(true, `Bonne réponse ! +${100 + bonus} pts (bonus vitesse : +${bonus})`, q.fun);
   } else {
+    culture.streak = 0;
     showFeedback(false, `Raté ! La bonne réponse était : ${q.correct}`, q.fun);
   }
 
@@ -1196,6 +1490,7 @@ function timeoutCulture() {
   stopCultureTimer();
   const q = currentCultureQuestion();
   markAnswers(null, q.correct);
+  culture.streak = 0;
   showFeedback(false, `Temps écoulé ! La bonne réponse était : ${q.correct}`, q.fun);
 }
 
@@ -1223,6 +1518,7 @@ function endCulture() {
   $("#end-score").textContent = `${culture.correct} / ${CULTURE_TOTAL}`;
   $("#end-pct").textContent = `${pct} %  ·  ${culture.points} pts`;
   $("#end-comment").textContent = comment.text;
+  showResultGif("#quiz-end", comment.gif);
 
   saveScore(culture.game, { value: culture.points, correct: culture.correct });
 
@@ -1238,6 +1534,7 @@ function endCulture() {
     message = `Ton meilleur score : ${previous.points} pts (${previous.correct} / ${CULTURE_TOTAL})`;
   }
   $("#end-best").textContent = message;
+  showNewTrophies("#quiz-end", awardTrophies("quiz", { game: culture.game, correct: culture.correct, maxStreak: culture.maxStreak, fastCorrect: culture.fastCorrect }));
 
   showOnly(["quiz-play", "quiz-end"], "quiz-end");
 }
